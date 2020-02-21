@@ -4,67 +4,67 @@ import random
 
 pygame.init()
 
-#KOLORY
-white=(255,255,255)
+#COLOURS
+white = (255,255,255)
 black=(0,0,0)
 
 red=(205,0,0)
-light_red=(255,0,0)
+lightRed=(255,0,0)
 
 green=(0,155,0)
-light_green=(0,255,0)
+lightGreen=(0,255,0)
 
 yellow=(255,255,0)
-change_yellow=(252,239,3)
+changeYellow=(252,239,3)
 
 blue=(54,5,250)
-change_blue=(0,128,255)
+changeBlue=(0,128,255)
 
 violet=(245,12,222)
-change_violet=(170,6,154)
+changeViolet=(170,6,154)
 
 orange=(255,128,0)
-change_orange=(236,58,21)
+changeOrange=(236,58,21)
 
 grey=(200,200,200)
 light_grey=(250,250,250)
-#KOLORY-koniec
+#COLOURS end
 
-display_height=600
-display_width=800
-block_size=20
+displayHeight=600
+displayWidth=800
+blockSize=20
 direction="right"
 direction2="right"
 
-pasek_wynikow_height=40
+scoreBarHeight=40
 smallfont=pygame.font.SysFont("comicsansms",25)
 medfont=pygame.font.SysFont("comicsansms",50)
 largefont=pygame.font.SysFont("comicsansms",80)
 smallFontSize=25
 
-#Grafika
-muchomor=pygame.image.load('grafika/grzyb.png')
-speedimg=pygame.image.load('grafika/speed.png')
-bonusimg=pygame.image.load('grafika/bonus.png')
-shiftimg=pygame.image.load('grafika/shift.png')
-przeszimg=pygame.image.load('grafika/przesz.png')
-icon=pygame.image.load('grafika/icon.png')
+#graphics
+mushroom=pygame.image.load('graphics/mushroom.png')
+speedImg=pygame.image.load('graphics/speed.png')
+bonusImg=pygame.image.load('graphics/bonus.png')
+shiftImg=pygame.image.load('graphics/shift.png')
+obstacleImg=pygame.image.load('graphics/przesz.png')
+icon=pygame.image.load('graphics/icon.png')
 #32x32
-skin1=pygame.image.load('grafika/skin1.png')
-skin2=pygame.image.load('grafika/skin2.png')
-skin3=pygame.image.load('grafika/skin3.png')
-wybrany=pygame.image.load('grafika/wybrany.png')
-#grafika menu
-menu1=pygame.image.load('grafika/menu1.png')
-#grafika objasnień
-classicimg=pygame.image.load('grafika/classic.png')
-rozbudowanyimg=pygame.image.load('grafika/rozbudowany.png')
-globalimg=pygame.image.load('grafika/global.png')
-playersimg=pygame.image.load('grafika/players.png')
-sterowanie1=pygame.image.load('grafika/sterowanie.png')
+skin1=pygame.image.load('graphics/skin1.png')
+skin2=pygame.image.load('graphics/skin2.png')
+skin3=pygame.image.load('graphics/skin3.png')
+choosenSkin=pygame.image.load('graphics/choosenSkin.png')
+#graphics menu
+menu1=pygame.image.load('graphics/menu1.png')
+#graphics objasnień
+classicimg=pygame.image.load('graphics/classic.png')
+extendedimg=pygame.image.load('graphics/extended.png')
+globalimg=pygame.image.load('graphics/global.png')
+playersimg=pygame.image.load('graphics/players.png')
+sterowanie1=pygame.image.load('graphics/controls.png')
 
 #ustawienie okna i ikony+ tekst
-gameDisplay = pygame.display.set_mode((display_width,display_height))
+gameDisplay = pygame.display.set_mode((displayWidth,displayHeight))
 pygame.display.set_caption("Wunsz rzeczny, bardzo niebezpieczny")
 pygame.display.set_icon(icon)
 
@@ -73,37 +73,37 @@ clock=pygame.time.Clock()
 
 #losowanie tła
 def background_skin_rand():
-    numer_tla=random.randrange(2)
-    if(numer_tla==0):
-        tlo=pygame.image.load('grafika/tla/tlo3.jpg')
-    elif(numer_tla==1):
-        tlo=pygame.image.load('grafika/tla/tlo4.jpg')
-    elif(numer_tla==2):
-        tlo=pygame.image.load('grafika/tla/tlo5.jpg')
-    elif(numer_tla==3):
-        tlo=pygame.image.load('grafika/tla/tlo6.jpg')
-    return tlo
+    numer_background=random.randrange(2)
+    if(numer_background==0):
+        background=pygame.image.load('graphics/background/background3.jpg')
+    elif(numer_background==1):
+        background=pygame.image.load('graphics/background/background4.jpg')
+    elif(numer_background==2):
+        background=pygame.image.load('graphics/background/background5.jpg')
+    elif(numer_background==3):
+        background=pygame.image.load('graphics/background/background6.jpg')
+    return background
 
 
-#losowanie skina owocka
+#losowanie skina fruitka
 def fruits_skin_rand():
     random.seed()
     numer=random.randrange(5)
     if(numer==0):
-        fruitsimg=pygame.image.load('grafika/owoc1.png')
+        fruitsimg=pygame.image.load('graphics/fruit1.png')
     elif(numer==1):
-        fruitsimg=pygame.image.load('grafika/owoc2.png')
+        fruitsimg=pygame.image.load('graphics/fruit2.png')
     elif(numer==2):
-        fruitsimg=pygame.image.load('grafika/owoc3.png')
+        fruitsimg=pygame.image.load('graphics/fruit3.png')
     elif(numer==3):
-        fruitsimg=pygame.image.load('grafika/owoc4.png')
+        fruitsimg=pygame.image.load('graphics/fruit4.png')
     elif(numer==4):
-        fruitsimg=pygame.image.load('grafika/owoc5.png')
+        fruitsimg=pygame.image.load('graphics/fruit5.png')
     return fruitsimg
 
 
 #definicja snake'a ?
-def snake(block_size, snakelist,headimg,bodyimg):
+def snake(blockSize, snakelist,headimg,bodyimg):
     if(direction=="right"):
         head=pygame.transform.rotate(headimg,270)
     if(direction=="left"):
@@ -118,7 +118,7 @@ def snake(block_size, snakelist,headimg,bodyimg):
     for XiY in snakelist[:-1]:
         gameDisplay.blit(bodyimg,(XiY[0],XiY[1]))
 
-def snake2(block_size, snakelist2,headimg2,bodyimg2):
+def snake2(blockSize, snakelist2,headimg2,bodyimg2):
     if(direction2=="right"):
         head2=pygame.transform.rotate(headimg2,270)
     if(direction2=="left"):
@@ -131,7 +131,7 @@ def snake2(block_size, snakelist2,headimg2,bodyimg2):
     gameDisplay.blit(head2,(snakelist2[-1][0],snakelist2[-1][1]))
     
     for XiY in snakelist2[:-1]:
-        #pygame.draw.rect(gameDisplay,green, [XiY[0],XiY[1],block_size,block_size])
+        #pygame.draw.rect(gameDisplay,green, [XiY[0],XiY[1],blockSize,blockSize])
         gameDisplay.blit(bodyimg2,(XiY[0],XiY[1]))
 
    
@@ -156,19 +156,19 @@ def pause():
         clock.tick(5)
         
 
-#wyswietlanie w rogu
+#wyswiebackgroundnie w rogu
 def powerups(przyspieszenie,bonus_points,shift):
     powery=smallfont.render("Aktywne ulepszenia: ",True,black)
     gameDisplay.blit(powery,[400,0])
     if(przyspieszenie==True):
-        gameDisplay.blit(speedimg,[635,10])
+        gameDisplay.blit(speedImg,[635,10])
     if(bonus_points==True):
-        gameDisplay.blit(bonusimg,[655,10])
+        gameDisplay.blit(bonusImg,[655,10])
     if(shift==True):
-        gameDisplay.blit(shiftimg,[675,10])
+        gameDisplay.blit(shiftImg,[675,10])
 
 
-#wyswietlanie score'a
+#wyswiebackgroundnie score'a
 def score(score):
     text=smallfont.render("Wynik: "+str(score),True,black)
     gameDisplay.blit(text,[0,0])
@@ -196,7 +196,7 @@ def text_objects(text,colour,size):
 #nazwa
 def message_to_screen(msg,colour,y_displace=0,size="small"):
     textSurf,textRect=text_objects(msg,colour,size)
-    textRect.center=(display_width/2),(display_height/2)+y_displace
+    textRect.center=(displayWidth/2),(displayHeight/2)+y_displace
     gameDisplay.blit(textSurf,textRect)
 
 
@@ -208,8 +208,8 @@ def button(text,x,y,width,height,inactive_colour,active_colour,action=None,actio
         if(action2 != None):
             if(action2=="classic"):
                 gameDisplay.blit(classicimg,(300,150))
-            elif(action2=="rozbudowany"):
-                gameDisplay.blit(rozbudowanyimg,(300,150))
+            elif(action2=="extended"):
+                gameDisplay.blit(extendedimg,(300,150))
             elif(action2=="global"):
                 gameDisplay.blit(globalimg,(300,150))
             elif(action2=="players"):
@@ -284,22 +284,22 @@ def wybor_skina():
         plik_skin1=open("skin1.txt","r")
         dane=plik_skin1.read()
         if(dane=="ziel"):
-            gameDisplay.blit(wybrany,(165,125))
+            gameDisplay.blit(choosenSkin,(165,125))
         elif(dane=="czer"):
-            gameDisplay.blit(wybrany,(390,125))
+            gameDisplay.blit(choosenSkin,(390,125))
         elif(dane=="nieb"):
-            gameDisplay.blit(wybrany,(615,125))
+            gameDisplay.blit(choosenSkin,(615,125))
         plik_skin1.close()
         
         
         plik_skin2=open("skin2.txt","r")
         dane=plik_skin2.read()
         if(dane=="ziel"):
-            gameDisplay.blit(wybrany,(165,275))
+            gameDisplay.blit(choosenSkin,(165,275))
         elif(dane=="czer"):
-            gameDisplay.blit(wybrany,(390,275))
+            gameDisplay.blit(choosenSkin,(390,275))
         elif(dane=="nieb"):
-            gameDisplay.blit(wybrany,(615,275))
+            gameDisplay.blit(choosenSkin,(615,275))
         plik_skin2.close()
         
         
@@ -308,18 +308,18 @@ def wybor_skina():
         
         message_to_screen("Wybierz skina węża",black,-275,"medium")
         message_to_screen("Singleplayer",black,-200,"small")
-        button("Ziel/Czer",100,150,150,50,green,light_green,action="zielony1")
-        button("Czer/czarny",325,150,150,50,red,light_red,action="czerwony1")
-        button("Nieb/Zółty",550,150,150,50,blue,change_blue,action="niebieski1")
+        button("Ziel/Czer",100,150,150,50,green,lightGreen,action="zielony1")
+        button("Czer/czarny",325,150,150,50,red,lightRed,action="czerwony1")
+        button("Nieb/Zółty",550,150,150,50,blue,changeBlue,action="niebieski1")
         message_to_screen("Multiplayer",black,-50,"small")
-        button("Ziel/Czer",100,300,150,50,green,light_green,action="zielony2")
-        button("Czer/czarny",325,300,150,50,red,light_red,action="czerwony2")
-        button("Nieb/Zółty",550,300,150,50,blue,change_blue,action="niebieski2")
+        button("Ziel/Czer",100,300,150,50,green,lightGreen,action="zielony2")
+        button("Czer/czarny",325,300,150,50,red,lightRed,action="czerwony2")
+        button("Nieb/Zółty",550,300,150,50,blue,changeBlue,action="niebieski2")
         gameDisplay.blit(skin1,(145,400))
         gameDisplay.blit(skin2,(370,400))
         gameDisplay.blit(skin3,(595,400))
                 
-        button("Powrót",275,525,250,50,red,light_red,action="intro1")
+        button("Powrót",275,525,250,50,red,lightRed,action="intro1")
         
         pygame.display.update()
         clock.tick(15)
@@ -335,12 +335,12 @@ def sub_game_menu():
         
         gameDisplay.fill(white)
         message_to_screen("Wybierz rodzaj rozgrywki",black,-250,"medium")
-        button("Klasyczny",20,150,250,50,yellow,change_yellow,action="classic",action2="classic")
-        button("Rozbudowany",20,225,250,50,green,light_green,action="rozbud",action2="rozbudowany")
-        button("Global",20,300,250,50,blue,change_blue,action="global",action2="global")
-        button("Dla dwóch graczy",20,375,250,50,orange,change_orange,action="multi",action2="players")
-        button("Wybor skina",20,450,250,50,violet,change_violet,action="skins")
-        button("Powrót",20,525,250,50,red,light_red,action="intro")
+        button("Klasyczny",20,150,250,50,yellow,changeYellow,action="classic",action2="classic")
+        button("extended",20,225,250,50,green,lightGreen,action="rozbud",action2="extended")
+        button("Global",20,300,250,50,blue,changeBlue,action="global",action2="global")
+        button("Dla dwóch graczy",20,375,250,50,orange,changeOrange,action="multi",action2="players")
+        button("Wybor skina",20,450,250,50,violet,changeViolet,action="skins")
+        button("Powrót",20,525,250,50,red,lightRed,action="intro")
         
         pygame.display.update()
         clock.tick(15)
@@ -357,9 +357,9 @@ def game_intro():
         message_to_screen("Snake",green,-200,"large")
         
         #BUTTONY
-        button("Graj",275,200,250,50,green,light_green,action="play")
+        button("Graj",275,200,250,50,green,lightGreen,action="play")
         button("Zasady i sterowanie",275,300,250,50,grey,light_grey,action="controls")
-        button("Wyjscie",275,400,250,50,red,light_red,action="quit")
+        button("Wyjscie",275,400,250,50,red,lightRed,action="quit")
         
         pygame.display.update()
         clock.tick(15)
@@ -374,7 +374,7 @@ def sterowanie():
         
     
         gameDisplay.blit(sterowanie1,(0,0))
-        button("Powrót",525,525,250,50,red,light_red,action="intro")
+        button("Powrót",525,525,250,50,red,lightRed,action="intro")
         
         pygame.display.update()
         clock.tick(15)
@@ -386,8 +386,8 @@ def classic():
     losujFruits=True
     gameExit=False
     gameOver=False
-    lead_x=display_width/2
-    lead_y=display_height/2
+    lead_x=displayWidth/2
+    lead_y=displayHeight/2
     lead_x_change=20
     lead_y_change=0
     
@@ -398,20 +398,20 @@ def classic():
     skin1=open("skin1.txt","r")
     linia1=skin1.readline()
     if(linia1=="ziel"):
-        headimg=pygame.image.load('grafika/head1.png')
-        bodyimg=pygame.image.load('grafika/body1.png')
+        headimg=pygame.image.load('graphics/head1.png')
+        bodyimg=pygame.image.load('graphics/body1.png')
     elif(linia1=="czer"):
-        headimg=pygame.image.load('grafika/head2.png')
-        bodyimg=pygame.image.load('grafika/body2.png')
+        headimg=pygame.image.load('graphics/head2.png')
+        bodyimg=pygame.image.load('graphics/body2.png')
     elif(linia1=="nieb"):
-        headimg=pygame.image.load('grafika/head3.png')
-        bodyimg=pygame.image.load('grafika/body3.png')
+        headimg=pygame.image.load('graphics/head3.png')
+        bodyimg=pygame.image.load('graphics/body3.png')
     skin1.close()
     
-    randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-    randAppleY= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    randAppleY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
     
-    tlo=background_skin_rand()
+    background=background_skin_rand()
        
     
     while(gameExit != True):
@@ -419,8 +419,8 @@ def classic():
             lead_x_change=0
             lead_y_change=0
             message_to_screen("Przegrałes",white,y_displace=-50,size="large")
-            button("Jeszcze raz!",275,350,250,50,green,light_green,action="classic")
-            button("Do menu głównego",275,450,250,50,red,light_red,action="intro")
+            button("Jeszcze raz!",275,350,250,50,green,lightGreen,action="classic")
+            button("Do menu głównego",275,450,250,50,red,lightRed,action="intro")
             
             pygame.display.update()
             
@@ -437,22 +437,22 @@ def classic():
                 if(event.key == pygame.K_a):
                     if(direction!="right"):
                         direction="left"
-                        lead_x_change=-block_size
+                        lead_x_change=-blockSize
                         lead_y_change=0
                 elif(event.key==pygame.K_d):
                     if(direction!="left"):                        
                         direction="right"
-                        lead_x_change=block_size
+                        lead_x_change=blockSize
                         lead_y_change=0
                 elif(event.key == pygame.K_w):
                     if(direction!="down"):
                         direction="up"
-                        lead_y_change=-block_size
+                        lead_y_change=-blockSize
                         lead_x_change=0
                 elif(event.key==pygame.K_s):
                     if(direction!="up"):
                         direction="down"
-                        lead_y_change=block_size
+                        lead_y_change=blockSize
                         lead_x_change=0
                 elif(event.key==pygame.K_p):
                     pause()
@@ -460,10 +460,10 @@ def classic():
         lead_x+=lead_x_change
         lead_y+=lead_y_change
         
-        if(lead_x>=display_width or lead_x<0 or lead_y>=display_height or lead_y<pasek_wynikow_height):
+        if(lead_x>=displayWidth or lead_x<0 or lead_y>=displayHeight or lead_y<scoreBarHeight):
             gameOver=True
         
-        gameDisplay.blit(tlo,(0,0))
+        gameDisplay.blit(background,(0,0))
 
         if(losujFruits==True):
             img=fruits_skin_rand()
@@ -476,8 +476,8 @@ def classic():
         snakehead.append(lead_x)
         snakehead.append(lead_y)
         snakelist.append(snakehead)
-        snake(block_size,snakelist,headimg,bodyimg)
-        gameDisplay.fill(grey,rect=[0,0,display_width,pasek_wynikow_height])
+        snake(blockSize,snakelist,headimg,bodyimg)
+        gameDisplay.fill(grey,rect=[0,0,displayWidth,scoreBarHeight])
         
         if(len(snakelist)>snakeLength):
             del snakelist[0]
@@ -491,8 +491,8 @@ def classic():
         pygame.display.update()
         
         if(lead_x==randAppleX and lead_y==randAppleY):
-            randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple=[randAppleX,randAppleY]
             
             sprawdzaj=True
@@ -510,8 +510,8 @@ def classic():
                     sprawdzaj=False
                 if(nowe==True):
                     nowe=False
-                    randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple=[randAppleX,randAppleY]
                  
             snakeLength+=1
@@ -525,13 +525,13 @@ def classic():
 
 
 
-def rozbudowany(tryb="rozbud"):
+def extended(tryb="rozbud"):
     przejscie=1
     #potrzebne do losowania skina pierwszych jeblek~cos takiego to powyzsze
     losuj2=True
     losuj3=True
-    czasMuchomor=time.time()
-    jest_Muchomor=False
+    czasmushroom=time.time()
+    jest_mushroom=False
     czasPrzeszkoda=time.time()
     jest_przeszkoda=False
     czaspowerup=time.time()
@@ -544,15 +544,15 @@ def rozbudowany(tryb="rozbud"):
     czas_tr_bonus=10
     czas_tr_shift=7
     czas_spawn_power=3
-    #byl_muchomor=False
+    #byl_mushroom=False
     apple_list=[]
     global direction
     direction="right"
     #losowac_skin_Fruits=True
     gameExit=False
     gameOver=False
-    lead_x=display_width/2
-    lead_y=display_height/2
+    lead_x=displayWidth/2
+    lead_y=displayHeight/2
     lead_x_change=20
     lead_y_change=0
     
@@ -560,29 +560,29 @@ def rozbudowany(tryb="rozbud"):
     snakeLength=3
     score1=0
     
-    #losowanie tla
-    tlo=background_skin_rand()
+    #losowanie background
+    background=background_skin_rand()
     
     skin1=open("skin1.txt","r")
     linia1=skin1.readline()
     if(linia1=="ziel"):
-        headimg=pygame.image.load('grafika/head1.png')
-        bodyimg=pygame.image.load('grafika/body1.png')
+        headimg=pygame.image.load('graphics/head1.png')
+        bodyimg=pygame.image.load('graphics/body1.png')
     elif(linia1=="czer"):
-        headimg=pygame.image.load('grafika/head2.png')
-        bodyimg=pygame.image.load('grafika/body2.png')
+        headimg=pygame.image.load('graphics/head2.png')
+        bodyimg=pygame.image.load('graphics/body2.png')
     elif(linia1=="nieb"):
-        headimg=pygame.image.load('grafika/head3.png')
-        bodyimg=pygame.image.load('grafika/body3.png')
+        headimg=pygame.image.load('graphics/head3.png')
+        bodyimg=pygame.image.load('graphics/body3.png')
     skin1.close()
     
-    randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-    randAppleY= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    randAppleY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
     placeApple=[randAppleX,randAppleY]
     apple_list.append(placeApple)
     
-    randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-    randAppleY2= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+    randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    randAppleY2= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
     placeApple2=[randAppleX2,randAppleY2]    
     
     #sprawdza czy sie powtarza z applelist
@@ -596,12 +596,12 @@ def rozbudowany(tryb="rozbud"):
         if(checked_losuj2==len(apple_list)):
             losuj2=False
             apple_list.append(placeApple2)
-        randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-        randAppleY2= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+        randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+        randAppleY2= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
         placeApple2=[randAppleX2,randAppleY2]
     
-    randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-    randAppleY3= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+    randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    randAppleY3= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
     placeApple3=[randAppleX3,randAppleY3]
     
     #sprawdza czy sie powtarza z applelist
@@ -615,8 +615,8 @@ def rozbudowany(tryb="rozbud"):
         if(checked_losuj3==len(apple_list)):
             losuj3=False
             apple_list.append(placeApple3)
-        randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-        randAppleY3= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+        randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+        randAppleY3= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
         placeApple3=[randAppleX3,randAppleY3]
 
 
@@ -626,8 +626,8 @@ def rozbudowany(tryb="rozbud"):
             lead_x_change=0
             lead_y_change=0
             message_to_screen("Przegrałes",white,y_displace=-50,size="large")
-            button("Jeszcze raz!",275,350,250,50,green,light_green,action=tryb)
-            button("Do menu głównego",275,450,250,50,red,light_red,action="intro")
+            button("Jeszcze raz!",275,350,250,50,green,lightGreen,action=tryb)
+            button("Do menu głównego",275,450,250,50,red,lightRed,action="intro")
             pygame.display.update()
             
             for event in pygame.event.get():
@@ -658,22 +658,22 @@ def rozbudowany(tryb="rozbud"):
                     if(event.key == pygame.K_a):
                         if(direction!="right"):
                             direction="left"
-                            lead_x_change=-block_size
+                            lead_x_change=-blockSize
                             lead_y_change=0
                     elif(event.key==pygame.K_d):
                         if(direction!="left"):                        
                             direction="right"
-                            lead_x_change=block_size
+                            lead_x_change=blockSize
                             lead_y_change=0
                     elif(event.key == pygame.K_w):
                         if(direction!="down"):
                             direction="up"
-                            lead_y_change=-block_size
+                            lead_y_change=-blockSize
                             lead_x_change=0
                     elif(event.key==pygame.K_s):
                         if(direction!="up"):
                             direction="down"
-                            lead_y_change=block_size
+                            lead_y_change=blockSize
                             lead_x_change=0
                     elif(event.key==pygame.K_p):
                         pause()
@@ -681,22 +681,22 @@ def rozbudowany(tryb="rozbud"):
                     if(event.key == pygame.K_a):
                         if(direction!="left"):
                             direction="right"
-                            lead_x_change=block_size
+                            lead_x_change=blockSize
                             lead_y_change=0
                     elif(event.key==pygame.K_d):
                         if(direction!="right"):                        
                             direction="left"
-                            lead_x_change=-block_size
+                            lead_x_change=-blockSize
                             lead_y_change=0
                     elif(event.key == pygame.K_w):
                         if(direction!="up"):
                             direction="down"
-                            lead_y_change=block_size
+                            lead_y_change=blockSize
                             lead_x_change=0
                     elif(event.key==pygame.K_s):
                         if(direction!="down"):
                             direction="up"
-                            lead_y_change=-block_size
+                            lead_y_change=-blockSize
                             lead_x_change=0
                     elif(event.key==pygame.K_p):
                         pause()
@@ -706,24 +706,24 @@ def rozbudowany(tryb="rozbud"):
         
         #wyjscie poza plansze
         if(tryb=="rozbud"):
-            if(lead_x>=display_width or lead_x<0 or lead_y>=display_height or lead_y<pasek_wynikow_height):
+            if(lead_x>=displayWidth or lead_x<0 or lead_y>=displayHeight or lead_y<scoreBarHeight):
                 gameOver=True
         elif(tryb=="global"):
-            if(lead_x==display_width):
+            if(lead_x==displayWidth):
                 lead_x=0
-            elif(lead_x==0-block_size):
-                lead_x=display_width
-            elif(lead_y==display_height):
-                lead_y=0+pasek_wynikow_height
-            elif(lead_y<0+pasek_wynikow_height):
-                lead_y=display_height
+            elif(lead_x==0-blockSize):
+                lead_x=displayWidth
+            elif(lead_y==displayHeight):
+                lead_y=0+scoreBarHeight
+            elif(lead_y<0+scoreBarHeight):
+                lead_y=displayHeight
         
-        gameDisplay.blit(tlo,(0,0))            
+        gameDisplay.blit(background,(0,0))            
             
         if(przejscie==1):
-            appleimg=pygame.image.load('grafika/owoc1.png')
-            appleimg2=pygame.image.load('grafika/owoc2.png')
-            appleimg3=pygame.image.load('grafika/owoc3.png')
+            appleimg=pygame.image.load('graphics/fruit1.png')
+            appleimg2=pygame.image.load('graphics/fruit2.png')
+            appleimg3=pygame.image.load('graphics/fruit3.png')
             przejscie=2
             
         gameDisplay.blit(appleimg,(randAppleX,randAppleY))
@@ -733,21 +733,21 @@ def rozbudowany(tryb="rozbud"):
         
         
         
-        #ustawianie muchomora i losowanie jego wspolrzednych
-        koniecMuchomor=time.time()-czasMuchomor
-        if(koniecMuchomor>10 and jest_Muchomor==False):
-            #if(byl_muchomor==False):
-            randMuchomorX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randMuchomorY= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0 
-            placeMuchomor=[randMuchomorX,randMuchomorY]
-            #sprawdzanie muchomorka na snake i owocek
+        #ustawianie mushrooma i losowanie jego wspolrzednych
+        koniecmushroom=time.time()-czasmushroom
+        if(koniecmushroom>10 and jest_mushroom==False):
+            #if(byl_mushroom==False):
+            randmushroomX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randmushroomY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0 
+            placemushroom=[randmushroomX,randmushroomY]
+            #sprawdzanie mushroomka na snake i fruitek
             sprawdzaj_M=True
             losuj_noweM=False
             while(sprawdzaj_M==True):
                 
                 checked_snake=0
                 for eachSegment in snakelist[:]:
-                    if(eachSegment==placeMuchomor):
+                    if(eachSegment==placemushroom):
                         print("MnaS")
                         losuj_noweM=True
                         break
@@ -757,7 +757,7 @@ def rozbudowany(tryb="rozbud"):
                 checked_apple=0    
                 if(losuj_noweM==False):
                     for eachElem in apple_list[:]:
-                        if(eachElem==placeMuchomor):
+                        if(eachElem==placemushroom):
                             print("MnaO")
                             losuj_noweM=True
                             break
@@ -765,11 +765,11 @@ def rozbudowany(tryb="rozbud"):
                             checked_apple+=1
                             
                 if(jest_przeszkoda==True and losuj_noweM==False):
-                    if(placeMuchomor==placePrzesz):
+                    if(placemushroom==placePrzesz):
                         losuj_noweM=True
                         
                 if(jest_powerup==True and losuj_noweM==False):
-                    if(placeMuchomor==placePower):
+                    if(placemushroom==placePower):
                         losuj_noweM=True
                             
                 if(checked_snake==len(snakelist) and checked_apple==len(apple_list) and losuj_noweM==False):
@@ -777,21 +777,21 @@ def rozbudowany(tryb="rozbud"):
                         
                 if(losuj_noweM==True):
                     losuj_noweM=False
-                    randMuchomorX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randMuchomorY= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0 
-                    placeMuchomor=[randMuchomorX,randMuchomorY]
-            jest_Muchomor=True
+                    randmushroomX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randmushroomY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0 
+                    placemushroom=[randmushroomX,randmushroomY]
+            jest_mushroom=True
             
-        if(jest_Muchomor==True):
-            gameDisplay.blit(muchomor,(randMuchomorX,randMuchomorY))
+        if(jest_mushroom==True):
+            gameDisplay.blit(mushroom,(randmushroomX,randmushroomY))
 
           
         #przeszkoda
         koniecPrzeszkoda=time.time()-czasPrzeszkoda
         if(koniecPrzeszkoda>5 and jest_przeszkoda==False):
             #podwojne blocksize aby dalo sie okrazyc
-            randPrzeszX= round(random.randrange(block_size,display_width-block_size-block_size)/20.0)*20.0
-            randPrzeszY= pasek_wynikow_height+ round(random.randrange(block_size,display_height-pasek_wynikow_height-block_size-block_size)/20.0)*20.0
+            randPrzeszX= round(random.randrange(blockSize,displayWidth-blockSize-blockSize)/20.0)*20.0
+            randPrzeszY= scoreBarHeight+ round(random.randrange(blockSize,displayHeight-scoreBarHeight-blockSize-blockSize)/20.0)*20.0
             placePrzesz=[randPrzeszX,randPrzeszY]
             
             sprawdzaj_snakeP=True
@@ -817,8 +817,8 @@ def rozbudowany(tryb="rozbud"):
                         #else:
                             #checked_apple+=1
                         
-                if(jest_Muchomor==True and losuj_noweP==False):
-                    if(placePrzesz==placeMuchomor):
+                if(jest_mushroom==True and losuj_noweP==False):
+                    if(placePrzesz==placemushroom):
                         losuj_noweP=True
                 
                 if(jest_powerup==True and losuj_noweP==False):
@@ -831,8 +831,8 @@ def rozbudowany(tryb="rozbud"):
                     
                 if(losuj_noweP==True):
                     losuj_noweP=False
-                    randPrzeszX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randPrzeszY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randPrzeszX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randPrzeszY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placePrzesz=[randPrzeszX,randPrzeszY]
 
             jest_przeszkoda=True
@@ -845,16 +845,16 @@ def rozbudowany(tryb="rozbud"):
             
             numer_power=random.randrange(3)
             if(numer_power==0):
-                powerupimg=speedimg
+                powerupimg=speedImg
             elif(numer_power==1):
-                powerupimg=bonusimg
+                powerupimg=bonusImg
             elif(numer_power==2):
-                powerupimg=shiftimg
+                powerupimg=shiftImg
                 
-            randPowerX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randPowerY= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0 
+            randPowerX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randPowerY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0 
             placePower=[randPowerX,randPowerY]
-            #sprawdzanie powera na snake i owocek
+            #sprawdzanie powera na snake i fruitek
             sprawdzaj_PU=True
             losuj_nowePU=False
             
@@ -883,8 +883,8 @@ def rozbudowany(tryb="rozbud"):
                     if(placePower==placePrzesz):
                         losuj_nowePU=True
                         
-                if(jest_Muchomor==True and losuj_nowePU==False):
-                    if(placePower==placeMuchomor):
+                if(jest_mushroom==True and losuj_nowePU==False):
+                    if(placePower==placemushroom):
                         losuj_nowePU=True
                             
                 if(checked_snake==len(snakelist) and checked_apple==len(apple_list) and losuj_nowePU==False):
@@ -892,8 +892,8 @@ def rozbudowany(tryb="rozbud"):
                         
                 if(losuj_nowePU==True):
                     losuj_nowePU=False
-                    randPowerX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randPowerY= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0 
+                    randPowerX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randPowerY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0 
                     placePower=[randPowerX,randPowerY]
             jest_powerup=True
             
@@ -905,15 +905,15 @@ def rozbudowany(tryb="rozbud"):
         snakehead.append(lead_x)
         snakehead.append(lead_y)
         snakelist.append(snakehead)
-        snake(block_size,snakelist,headimg,bodyimg)
+        snake(blockSize,snakelist,headimg,bodyimg)
         
-        #wyswietlanie przeszkody po snaku-wazniejsza
+        #wyswiebackgroundnie przeszkody po snaku-wazniejsza
         if(jest_przeszkoda==True):
-            gameDisplay.blit(przeszimg,(randPrzeszX,randPrzeszY))
+            gameDisplay.blit(obstacleImg,(randPrzeszX,randPrzeszY))
         
         
         #Gorne menu
-        gameDisplay.fill(grey,rect=[0,0,display_width,pasek_wynikow_height])
+        gameDisplay.fill(grey,rect=[0,0,displayWidth,scoreBarHeight])
         
         if(len(snakelist)>snakeLength):
             del snakelist[0]
@@ -942,8 +942,8 @@ def rozbudowany(tryb="rozbud"):
         
         #zjadanie jabluszka1
         if(lead_x==randAppleX and lead_y==randAppleY):
-            randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple=[randAppleX,randAppleY]
             
             sprawdzaj_snakeO=True
@@ -959,8 +959,8 @@ def rozbudowany(tryb="rozbud"):
                     else:
                         checked+=1
                         
-                if(jest_Muchomor==True):
-                    if(placeApple==placeMuchomor):
+                if(jest_mushroom==True):
+                    if(placeApple==placemushroom):
                         losuj_noweO=True
                         
                 if(jest_przeszkoda==True and losuj_noweO==False):
@@ -980,8 +980,8 @@ def rozbudowany(tryb="rozbud"):
                     
                 if(losuj_noweO==True):
                     losuj_noweO=False
-                    randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple=[randAppleX,randAppleY]
             apple_list.pop(0)
             apple_list.insert(0,[randAppleX,randAppleY])
@@ -992,8 +992,8 @@ def rozbudowany(tryb="rozbud"):
         
         #zjadanie jabloszka 2
         if(lead_x==randAppleX2 and lead_y==randAppleY2):
-            randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY2= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY2= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple2=[randAppleX2,randAppleY2]
             
             sprawdzaj_snakeO2=True
@@ -1009,8 +1009,8 @@ def rozbudowany(tryb="rozbud"):
                     else:
                         checked2+=1
                         
-                if(jest_Muchomor==True and losuj_noweO2==False):
-                    if(placeApple2==placeMuchomor):
+                if(jest_mushroom==True and losuj_noweO2==False):
+                    if(placeApple2==placemushroom):
                         losuj_noweO2=True
                         
                 if(jest_przeszkoda==True and losuj_noweO2==False):
@@ -1030,8 +1030,8 @@ def rozbudowany(tryb="rozbud"):
                     
                 if(losuj_noweO2==True):
                     losuj_noweO2=False
-                    randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY2= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY2= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple2=[randAppleX2,randAppleY2]
             apple_list.pop(1)
             apple_list.insert(1,[randAppleX2,randAppleY2])
@@ -1043,8 +1043,8 @@ def rozbudowany(tryb="rozbud"):
         
         #zjadanie jabluszka3
         if(lead_x==randAppleX3 and lead_y==randAppleY3):
-            randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY3= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY3= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple3=[randAppleX3,randAppleY3]
             
             sprawdzaj_snakeO3=True
@@ -1060,8 +1060,8 @@ def rozbudowany(tryb="rozbud"):
                     else:
                         checked3+=1
                         
-                if(jest_Muchomor==True):
-                    if(placeApple3==placeMuchomor):
+                if(jest_mushroom==True):
+                    if(placeApple3==placemushroom):
                         losuj_noweO3=True
                         
                 if(jest_przeszkoda==True and losuj_noweO3==False):
@@ -1081,8 +1081,8 @@ def rozbudowany(tryb="rozbud"):
                     
                 if(losuj_noweO3==True):
                     losuj_noweO3=False
-                    randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY3= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY3= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple3=[randAppleX3,randAppleY3]
             apple_list.pop(2)
             apple_list.insert(2,[randAppleX3,randAppleY3])
@@ -1092,13 +1092,13 @@ def rozbudowany(tryb="rozbud"):
         
         
         
-        #zjadanie grzyba
-        if(jest_Muchomor==True):
-            if(lead_x==randMuchomorX and lead_y==randMuchomorY):
-                jest_Muchomor=False
+        #zjadanie mushrooma
+        if(jest_mushroom==True):
+            if(lead_x==randmushroomX and lead_y==randmushroomY):
+                jest_mushroom=False
                 score1-=5
                 snakeLength-=1
-                czasMuchomor=time.time()
+                czasmushroom=time.time()
                 if(snakeLength<=2):
                     gameOver=True
         
@@ -1113,13 +1113,13 @@ def rozbudowany(tryb="rozbud"):
             if(lead_x==randPowerX and lead_y==randPowerY):
                 jest_powerup=False
                 czaspowerup=time.time()
-                if(powerupimg==speedimg):
+                if(powerupimg==speedImg):
                     przyspieszenie=True
                     czasprzyspieszenie=time.time()
-                elif(powerupimg==bonusimg):
+                elif(powerupimg==bonusImg):
                     bonus_points=True
                     czasbonuspoints=time.time()
-                elif(powerupimg==shiftimg):
+                elif(powerupimg==shiftImg):
                     shift=True
                     czasshift=time.time()
         
@@ -1136,28 +1136,28 @@ def rozbudowany(tryb="rozbud"):
             P8=False
             
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX-block_size,randPrzeszY-block_size]):
+                if(eachSegment==[randPrzeszX-blockSize,randPrzeszY-blockSize]):
                     P1=True
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX,randPrzeszY-block_size]):
+                if(eachSegment==[randPrzeszX,randPrzeszY-blockSize]):
                     P2=True
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX+block_size,randPrzeszY-block_size]):
+                if(eachSegment==[randPrzeszX+blockSize,randPrzeszY-blockSize]):
                     P3=True
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX-block_size,randPrzeszY]):
+                if(eachSegment==[randPrzeszX-blockSize,randPrzeszY]):
                     P4=True
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX+block_size,randPrzeszY]):
+                if(eachSegment==[randPrzeszX+blockSize,randPrzeszY]):
                     P5=True
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX-block_size,randPrzeszY+block_size]):
+                if(eachSegment==[randPrzeszX-blockSize,randPrzeszY+blockSize]):
                     P6=True
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX,randPrzeszY+block_size]):
+                if(eachSegment==[randPrzeszX,randPrzeszY+blockSize]):
                     P7=True
             for eachSegment in snakelist[:]:
-                if(eachSegment==[randPrzeszX+block_size,randPrzeszY+block_size]):
+                if(eachSegment==[randPrzeszX+blockSize,randPrzeszY+blockSize]):
                     P8=True
             if(P1==True and P2==True and P3==True and P4==True and P5==True and P6==True and P7==True and P8==True):
                 score1+=50
@@ -1188,7 +1188,7 @@ def players():
     gameExit=False
     gameOver=False
     lead_x=0
-    lead_y=40+3*block_size
+    lead_y=40+3*blockSize
     lead_x_change=20
     lead_y_change=0
     
@@ -1199,8 +1199,8 @@ def players():
     
     global direction2
     direction2="left"
-    lead_x2=display_width-block_size
-    lead_y2=display_height-3*block_size
+    lead_x2=displayWidth-blockSize
+    lead_y2=displayHeight-3*blockSize
     lead_x_change2=-20
     lead_y_change2=0
     
@@ -1211,48 +1211,48 @@ def players():
     skin1=open("skin1.txt","r")
     linia1=skin1.readline()
     if(linia1=="ziel"):
-        headimg=pygame.image.load('grafika/head1.png')
-        bodyimg=pygame.image.load('grafika/body1.png')
+        headimg=pygame.image.load('graphics/head1.png')
+        bodyimg=pygame.image.load('graphics/body1.png')
     elif(linia1=="czer"):
-        headimg=pygame.image.load('grafika/head2.png')
-        bodyimg=pygame.image.load('grafika/body2.png')
+        headimg=pygame.image.load('graphics/head2.png')
+        bodyimg=pygame.image.load('graphics/body2.png')
     elif(linia1=="nieb"):
-        headimg=pygame.image.load('grafika/head3.png')
-        bodyimg=pygame.image.load('grafika/body3.png')
+        headimg=pygame.image.load('graphics/head3.png')
+        bodyimg=pygame.image.load('graphics/body3.png')
     skin1.close()
     
     
     skin2=open("skin2.txt","r")
     linia2=skin2.readline()
     if(linia2=="ziel"):
-        headimg2=pygame.image.load('grafika/head1.png')
-        bodyimg2=pygame.image.load('grafika/body1.png')
+        headimg2=pygame.image.load('graphics/head1.png')
+        bodyimg2=pygame.image.load('graphics/body1.png')
     elif(linia2=="czer"):
-        headimg2=pygame.image.load('grafika/head2.png')
-        bodyimg2=pygame.image.load('grafika/body2.png')
+        headimg2=pygame.image.load('graphics/head2.png')
+        bodyimg2=pygame.image.load('graphics/body2.png')
     elif(linia2=="nieb"):
-        headimg2=pygame.image.load('grafika/head3.png')
-        bodyimg2=pygame.image.load('grafika/body3.png')
+        headimg2=pygame.image.load('graphics/head3.png')
+        bodyimg2=pygame.image.load('graphics/body3.png')
     skin2.close()
     
     
     
     """
-    numer_tla=random.randrange(2)
-    if(numer_tla==0):
-        tlo=pygame.image.load('tlo1.png')
-    elif(numer_tla==1):
-        tlo=pygame.image.load('tlo2.png')
+    numer_background=random.randrange(2)
+    if(numer_background==0):
+        background=pygame.image.load('background1.png')
+    elif(numer_background==1):
+        background=pygame.image.load('background2.png')
     """
-    tlo=background_skin_rand()
+    background=background_skin_rand()
     
-    randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-    randAppleY= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    randAppleY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
     placeApple=[randAppleX,randAppleY]
     apple_list.append(placeApple)
     
-    randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-    randAppleY2= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+    randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    randAppleY2= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
     placeApple2=[randAppleX2,randAppleY2]    
     
     #sprawdza czy sie powtarza z applelist
@@ -1266,12 +1266,12 @@ def players():
         if(checked_losuj2==len(apple_list)):
             losuj2=False
             apple_list.append(placeApple2)
-        randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-        randAppleY2= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+        randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+        randAppleY2= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
         placeApple2=[randAppleX2,randAppleY2]
     
-    randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-    randAppleY3= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+    randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    randAppleY3= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
     placeApple3=[randAppleX3,randAppleY3]
     
     #sprawdza czy sie powtarza z applelist
@@ -1285,8 +1285,8 @@ def players():
         if(checked_losuj3==len(apple_list)):
             losuj3=False
             apple_list.append(placeApple3)
-        randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-        randAppleY3= pasek_wynikow_height+round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+        randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+        randAppleY3= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
         placeApple3=[randAppleX3,randAppleY3]
     
     
@@ -1299,8 +1299,8 @@ def players():
             if(gameOver==True):
                 if(winny==1):
                     message_to_screen("Wygrywa gracz nr.2",white,y_displace=-50,size="large")
-                    button("Jeszcze raz!",275,350,250,50,green,light_green,action="multi")
-                    button("Do menu głównego",275,450,250,50,red,light_red,action="intro")
+                    button("Jeszcze raz!",275,350,250,50,green,lightGreen,action="multi")
+                    button("Do menu głównego",275,450,250,50,red,lightRed,action="intro")
                     pygame.display.update()
                     for event in pygame.event.get():
                         if(event.type==pygame.QUIT):
@@ -1308,8 +1308,8 @@ def players():
                             gameOver=False
                 elif(winny==2):
                     message_to_screen("Wygrywa gracz nr.1",white,y_displace=-50,size="large")
-                    button("Jeszcze raz!",275,350,250,50,green,light_green,action="multi")
-                    button("Do menu głównego",275,450,250,50,red,light_red,action="intro")
+                    button("Jeszcze raz!",275,350,250,50,green,lightGreen,action="multi")
+                    button("Do menu głównego",275,450,250,50,red,lightRed,action="intro")
                     pygame.display.update()
                     for event in pygame.event.get():
                         if(event.type==pygame.QUIT):
@@ -1322,8 +1322,8 @@ def players():
                     message_to_screen("Wygrywa gracz nr.2",white,y_displace=-50,size="large")
                 else:
                     message_to_screen("Remis",white,y_displace=-50,size="large")
-                button("Jeszcze raz!",275,350,250,50,green,light_green,action="multi")
-                button("Do menu głównego",275,450,250,50,red,light_red,action="intro")
+                button("Jeszcze raz!",275,350,250,50,green,lightGreen,action="multi")
+                button("Do menu głównego",275,450,250,50,red,lightRed,action="intro")
                 pygame.display.update()
                 for event in pygame.event.get():
                     if(event.type==pygame.QUIT):
@@ -1338,44 +1338,44 @@ def players():
                     if(event.key == pygame.K_a):
                         if(direction!="right"):
                             direction="left"
-                            lead_x_change=-block_size
+                            lead_x_change=-blockSize
                             lead_y_change=0
                     elif(event.key==pygame.K_d):
                         if(direction!="left"):                        
                             direction="right"
-                            lead_x_change=block_size
+                            lead_x_change=blockSize
                             lead_y_change=0
                     elif(event.key == pygame.K_w):
                         if(direction!="down"):
                             direction="up"
-                            lead_y_change=-block_size
+                            lead_y_change=-blockSize
                             lead_x_change=0
                     elif(event.key==pygame.K_s):
                         if(direction!="up"):
                             direction="down"
-                            lead_y_change=block_size
+                            lead_y_change=blockSize
                             lead_x_change=0
                      
                     
                     if(event.key == pygame.K_LEFT):
                         if(direction2!="right"):
                             direction2="left"
-                            lead_x_change2=-block_size
+                            lead_x_change2=-blockSize
                             lead_y_change2=0
                     elif(event.key==pygame.K_RIGHT):
                         if(direction2!="left"):                        
                             direction2="right"
-                            lead_x_change2=block_size
+                            lead_x_change2=blockSize
                             lead_y_change2=0
                     elif(event.key == pygame.K_UP):
                         if(direction2!="down"):
                             direction2="up"
-                            lead_y_change2=-block_size
+                            lead_y_change2=-blockSize
                             lead_x_change2=0
                     elif(event.key==pygame.K_DOWN):
                         if(direction2!="up"):
                             direction2="down"
-                            lead_y_change2=block_size
+                            lead_y_change2=blockSize
                             lead_x_change2=0
                             
   
@@ -1390,21 +1390,21 @@ def players():
         lead_y2+=lead_y_change2
         
         #wyjscie poza plansze
-        if(lead_x>=display_width or lead_x<0 or lead_y>=display_height or lead_y<pasek_wynikow_height):
+        if(lead_x>=displayWidth or lead_x<0 or lead_y>=displayHeight or lead_y<scoreBarHeight):
             gameOver=True
             winny=1
         
-        if(lead_x2>=display_width or lead_x2<0 or lead_y2>=display_height or lead_y2<pasek_wynikow_height):
+        if(lead_x2>=displayWidth or lead_x2<0 or lead_y2>=displayHeight or lead_y2<scoreBarHeight):
             gameOver=True
             winny=2
             
         
-        gameDisplay.blit(tlo,(0,0))
+        gameDisplay.blit(background,(0,0))
             
         if(przejscie==1):
-            appleimg=pygame.image.load('grafika/owoc1.png')
-            appleimg2=pygame.image.load('grafika/owoc2.png')
-            appleimg3=pygame.image.load('grafika/owoc3.png')
+            appleimg=pygame.image.load('graphics/fruit1.png')
+            appleimg2=pygame.image.load('graphics/fruit2.png')
+            appleimg3=pygame.image.load('graphics/fruit3.png')
             przejscie=2
             
         gameDisplay.blit(appleimg,(randAppleX,randAppleY))
@@ -1417,20 +1417,20 @@ def players():
         snakehead.append(lead_x)
         snakehead.append(lead_y)
         snakelist.append(snakehead)
-        snake(block_size,snakelist,headimg,bodyimg)
+        snake(blockSize,snakelist,headimg,bodyimg)
         
         
         snakehead2=[]
         snakehead2.append(lead_x2)
         snakehead2.append(lead_y2)
         snakelist2.append(snakehead2)
-        snake2(block_size,snakelist2,headimg2,bodyimg2)
+        snake2(blockSize,snakelist2,headimg2,bodyimg2)
         #ZAKOŃCZYŁEM TU!
         
         
         
         #Gorne menu
-        gameDisplay.fill(grey,rect=[0,0,display_width,pasek_wynikow_height])
+        gameDisplay.fill(grey,rect=[0,0,displayWidth,scoreBarHeight])
         
         if(len(snakelist)>snakeLength):
             del snakelist[0]
@@ -1474,8 +1474,8 @@ def players():
         
         #zjadanie jabluszka1
         if(lead_x==randAppleX and lead_y==randAppleY):
-            randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple=[randAppleX,randAppleY]
             
             sprawdzaj_snakeO=True
@@ -1508,8 +1508,8 @@ def players():
                     
                 if(losuj_noweO==True):
                     losuj_noweO=False
-                    randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple=[randAppleX,randAppleY]
             apple_list.pop(0)
             apple_list.insert(0,[randAppleX,randAppleY])
@@ -1521,8 +1521,8 @@ def players():
         
         #zjadanie jabloszka 2
         if(lead_x==randAppleX2 and lead_y==randAppleY2):
-            randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY2= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY2= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple2=[randAppleX2,randAppleY2]
             
             sprawdzaj_snakeO2=True
@@ -1555,8 +1555,8 @@ def players():
                     
                 if(losuj_noweO2==True):
                     losuj_noweO2=False
-                    randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY2= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY2= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple2=[randAppleX2,randAppleY2]
             apple_list.pop(1)
             apple_list.insert(1,[randAppleX2,randAppleY2])
@@ -1567,8 +1567,8 @@ def players():
        
         #zjadanie jabluszka3
         if(lead_x==randAppleX3 and lead_y==randAppleY3):
-            randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY3= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY3= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple3=[randAppleX3,randAppleY3]
             
             sprawdzaj_snakeO3=True
@@ -1602,8 +1602,8 @@ def players():
                     
                 if(losuj_noweO3==True):
                     losuj_noweO3=False
-                    randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY3= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY3= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple3=[randAppleX3,randAppleY3]
             apple_list.pop(2)
             apple_list.insert(2,[randAppleX3,randAppleY3])
@@ -1614,8 +1614,8 @@ def players():
        #dla drugiego weża:
        #zjadanie jabluszka1
         if(lead_x2==randAppleX and lead_y2==randAppleY):
-            randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple=[randAppleX,randAppleY]
             
             sprawdzaj_snakeO=True
@@ -1648,8 +1648,8 @@ def players():
                     
                 if(losuj_noweO==True):
                     losuj_noweO=False
-                    randAppleX= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple=[randAppleX,randAppleY]
             apple_list.pop(0)
             apple_list.insert(0,[randAppleX,randAppleY])
@@ -1661,8 +1661,8 @@ def players():
         
         #zjadanie jabloszka 2
         if(lead_x2==randAppleX2 and lead_y2==randAppleY2):
-            randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY2= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY2= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple2=[randAppleX2,randAppleY2]
             
             sprawdzaj_snakeO2=True
@@ -1695,8 +1695,8 @@ def players():
                     
                 if(losuj_noweO2==True):
                     losuj_noweO2=False
-                    randAppleX2= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY2= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX2= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY2= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple2=[randAppleX2,randAppleY2]
             apple_list.pop(1)
             apple_list.insert(1,[randAppleX2,randAppleY2])
@@ -1708,8 +1708,8 @@ def players():
         
         #zjadanie jabluszka3
         if(lead_x2==randAppleX3 and lead_y2==randAppleY3):
-            randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-            randAppleY3= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+            randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+            randAppleY3= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
             placeApple3=[randAppleX3,randAppleY3]
             
             sprawdzaj_snakeO3=True
@@ -1744,8 +1744,8 @@ def players():
                     
                 if(losuj_noweO3==True):
                     losuj_noweO3=False
-                    randAppleX3= round(random.randrange(0,display_width-block_size)/20.0)*20.0
-                    randAppleY3= pasek_wynikow_height+ round(random.randrange(0,display_height-pasek_wynikow_height-block_size)/20.0)*20.0
+                    randAppleX3= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+                    randAppleY3= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
                     placeApple3=[randAppleX3,randAppleY3]
             apple_list.pop(2)
             apple_list.insert(2,[randAppleX3,randAppleY3])
@@ -1759,15 +1759,15 @@ def players():
     pygame.quit()
     quit()
     
-#pentla gry
+#penbackground gry
 def gameLoop(tryb,pierwszego="zielony",drugiego="czerwony"):
     
     if(tryb=="rozbud"):
-        rozbudowany()
+        extended()
     elif(tryb=="classic"):
         classic()
     elif(tryb=="global"):
-        rozbudowany("global")
+        extended("global")
     elif(tryb=="players"):
         players()
     
