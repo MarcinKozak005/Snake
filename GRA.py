@@ -336,7 +336,7 @@ def sub_game_menu():
         gameDisplay.fill(white)
         message_to_screen("Wybierz rodzaj rozgrywki",black,-250,"medium")
         button("Klasyczny",20,150,250,50,yellow,changeYellow,action="classic",action2="classic")
-        button("extended",20,225,250,50,green,lightGreen,action="rozbud",action2="extended")
+        button("Rozbudowany",20,225,250,50,green,lightGreen,action="rozbud",action2="extended")
         button("Global",20,300,250,50,blue,changeBlue,action="global",action2="global")
         button("Dla dwóch graczy",20,375,250,50,orange,changeOrange,action="multi",action2="players")
         button("Wybor skina",20,450,250,50,violet,changeViolet,action="skins")
