@@ -2,6 +2,8 @@ import pygame
 import time
 import random
 
+
+
 pygame.init()
 
 #COLOURS
@@ -71,18 +73,13 @@ pygame.display.set_icon(icon)
 FPS=7
 clock=pygame.time.Clock()
 
-#losowanie tła
-def background_skin_rand():
-    numer_background=random.randrange(2)
-    if(numer_background==0):
-        background=pygame.image.load('graphics/background/background3.jpg')
-    elif(numer_background==1):
-        background=pygame.image.load('graphics/background/background4.jpg')
-    elif(numer_background==2):
-        background=pygame.image.load('graphics/background/background5.jpg')
-    elif(numer_background==3):
-        background=pygame.image.load('graphics/background/background6.jpg')
-    return background
+backgroundTextureList = [pygame.image.load('graphics/background/background3.jpg'),
+                         pygame.image.load('graphics/background/background4.jpg'),
+                         pygame.image.load('graphics/background/background5.jpg'),
+                         pygame.image.load('graphics/background/background6.jpg')]
+def backgroundTextureRandom():
+    randomNumber=random.randrange(4)
+    return backgroundTextureList[randomNumber]
 
 
 #losowanie skina fruitka
@@ -380,48 +377,102 @@ def sterowanie():
         clock.tick(15)
 
 
-def classic():
-    global direction
-    direction="right"
-    losujFruits=True
-    gameExit=False
-    gameOver=False
-    lead_x=displayWidth/2
-    lead_y=displayHeight/2
-    lead_x_change=20
-    lead_y_change=0
-    
-    snakelist=[]
-    snakeLength=3
-    score1=0
-    
+        
+
+def getSkinOne():
     skin1=open("skin1.txt","r")
     linia1=skin1.readline()
-    if(linia1=="ziel"):
-        headimg=pygame.image.load('graphics/head1.png')
-        bodyimg=pygame.image.load('graphics/body1.png')
-    elif(linia1=="czer"):
-        headimg=pygame.image.load('graphics/head2.png')
-        bodyimg=pygame.image.load('graphics/body2.png')
-    elif(linia1=="nieb"):
-        headimg=pygame.image.load('graphics/head3.png')
-        bodyimg=pygame.image.load('graphics/body3.png')
     skin1.close()
-    
-    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
-    randAppleY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
-    
-    background=background_skin_rand()
-       
-    
+    if(linia1=="ziel"):
+        return(pygame.image.load('graphics/head1.png'),pygame.image.load('graphics/body1.png'))
+    elif(linia1=="czer"):
+        return(pygame.image.load('graphics/head2.png'),pygame.image.load('graphics/body2.png'))
+    elif(linia1=="nieb"):
+        return(pygame.image.load('graphics/head3.png'),pygame.image.load('graphics/body3.png'))
+
+
+
+def randFruitPosition():
+    X = round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
+    Y = scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
+    return [X,Y]
+
+
+def checkBorder(snake,displayWidth,displayHeight,scoreBarHeight):
+    if(snake.leadX >= displayWidth or snake.leadX < 0 or snake.leadY >= displayHeight or snake.leadY < scoreBarHeight):
+        return True
+    return False
+
+class Snake:
+    def __init__(self, leadX, leadY, headImg, bodyImg):
+        self.direction = "right"
+        self.leadX = leadX
+        self.leadY = leadY
+        self.xChange = 20
+        self.yChange = 0
+        self.snakeList = []
+        self.snakeList.append([self.leadX,self.leadY])
+        self.snakeLength = 3
+        self.headImg = headImg
+        self.bodyImg = bodyImg
+        
+    def setChange(self,X,Y):
+        self.xChange = X
+        self.yChange= Y
+        
+    def setDirection(self,newDirection):
+        self.direction = newDirection
+        
+    def move(self):
+        self.leadX += self.xChange
+        self.leadY += self.yChange
+        
+        self.snakeList.append([self.leadX,self.leadY])
+
+        if(self.direction=="right"):
+            head=pygame.transform.rotate(self.headImg,270)
+        if(self.direction=="left"):
+            head=pygame.transform.rotate(self.headImg,90)
+        if(self.direction=="up"):
+            head=self.headImg
+        if(self.direction=="down"):
+            head=pygame.transform.rotate(self.headImg,180)
+        
+        gameDisplay.blit(head,(self.snakeList[-1][0],self.snakeList[-1][1]))
+        
+        #part = [X,Y]
+        for part in self.snakeList[:-1]:
+            gameDisplay.blit(self.bodyImg,(part[0],part[1]))
+            
+    def checkSnakeLength(self):
+        if(len(self.snakeList) > self.snakeLength):
+            del self.snakeList[0]
+            
+    def checkHeadOverlapsBody(self):
+        for eachSegment in self.snakeList[:-1]:
+            if(eachSegment==[self.leadX,self.leadY]):
+                return True
+
+
+def classic():
+    skin = getSkinOne()
+    snake = Snake(displayWidth/2,displayHeight/2,skin[0],skin[1])
+    fruitPosition = randFruitPosition()
+    background = backgroundTextureRandom()
+
+    getNewFruit=True
+    gameExit=False
+    gameOver=False
+
+    player1Score=0
+
     while(gameExit != True):
-        while(gameOver==True):
-            lead_x_change=0
-            lead_y_change=0
+        while(gameOver == True):
+            snake.setChange(0,0)
+            
             message_to_screen("Przegrałes",white,y_displace=-50,size="large")
             button("Jeszcze raz!",275,350,250,50,green,lightGreen,action="classic")
             button("Do menu głównego",275,450,250,50,red,lightRed,action="intro")
-            
             pygame.display.update()
             
             for event in pygame.event.get():
@@ -429,100 +480,58 @@ def classic():
                     gameExit=True
                     gameOver=False
     
-                        
         for event in pygame.event.get():
             if(event.type== pygame.QUIT):
                 gameExit=True
             if(event.type==pygame.KEYDOWN):
                 if(event.key == pygame.K_a):
-                    if(direction!="right"):
-                        direction="left"
-                        lead_x_change=-blockSize
-                        lead_y_change=0
+                    if(snake.direction!="right"):
+                        snake.setDirection("left")
+                        snake.setChange(-blockSize,0)
                 elif(event.key==pygame.K_d):
-                    if(direction!="left"):                        
-                        direction="right"
-                        lead_x_change=blockSize
-                        lead_y_change=0
+                    if(snake.direction!="left"):                        
+                        snake.setDirection("right")
+                        snake.setChange(blockSize,0)
                 elif(event.key == pygame.K_w):
-                    if(direction!="down"):
-                        direction="up"
-                        lead_y_change=-blockSize
-                        lead_x_change=0
+                    if(snake.direction!="down"):
+                        snake.setDirection("up")
+                        snake.setChange(0,-blockSize)
                 elif(event.key==pygame.K_s):
-                    if(direction!="up"):
-                        direction="down"
-                        lead_y_change=blockSize
-                        lead_x_change=0
+                    if(snake.direction!="up"):
+                        snake.setDirection("down")
+                        snake.setChange(0,blockSize)
                 elif(event.key==pygame.K_p):
                     pause()
                     
-        lead_x+=lead_x_change
-        lead_y+=lead_y_change
-        
-        if(lead_x>=displayWidth or lead_x<0 or lead_y>=displayHeight or lead_y<scoreBarHeight):
-            gameOver=True
+                    
+        if(getNewFruit==True):
+            img=fruits_skin_rand()
+            getNewFruit=False     
         
         gameDisplay.blit(background,(0,0))
-
-        if(losujFruits==True):
-            img=fruits_skin_rand()
-            losujFruits=False
-            
-        gameDisplay.blit(img,(randAppleX,randAppleY))
-                   
-
-        snakehead=[]
-        snakehead.append(lead_x)
-        snakehead.append(lead_y)
-        snakelist.append(snakehead)
-        snake(blockSize,snakelist,headimg,bodyimg)
+        gameDisplay.blit(img,fruitPosition)
         gameDisplay.fill(grey,rect=[0,0,displayWidth,scoreBarHeight])
-        
-        if(len(snakelist)>snakeLength):
-            del snakelist[0]
-            
-        for eachSegment in snakelist[:-1]:
-            if(eachSegment==snakehead):
-                gameOver=True
-        
-        
-        score(score1)
+        score(player1Score)
+        snake.move()        
+        snake.checkSnakeLength()
         pygame.display.update()
         
-        if(lead_x==randAppleX and lead_y==randAppleY):
-            randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
-            randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
-            placeApple=[randAppleX,randAppleY]
+        gameOver = checkBorder(snake,displayWidth,displayHeight,scoreBarHeight) or snake.checkHeadOverlapsBody()
+
+        if([snake.leadX, snake.leadY] == fruitPosition):
+            fruitPosition = randFruitPosition()
             
-            sprawdzaj=True
-            nowe=False
-            while(sprawdzaj==True):
-                checked=0
-                for eachSegment in snakelist[:]:
-                    if(eachSegment==placeApple):
-                        #print("ala")
-                        nowe=True
-                        break
-                    else:
-                        checked+=1
-                if(checked==len(snakelist)):
-                    sprawdzaj=False
-                if(nowe==True):
-                    nowe=False
-                    randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
-                    randAppleY= scoreBarHeight+ round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
-                    placeApple=[randAppleX,randAppleY]
-                 
-            snakeLength+=1
-            score1+=10
-            losujFruits=True
+            while (fruitPosition in snake.snakeList):
+                fruitPosition = randFruitPosition()
+            
+            snake.snakeLength += 1
+            player1Score += 10
+            getNewFruit = True
     
         clock.tick(FPS)
 
     pygame.quit()
     quit()
-
 
 
 def extended(tryb="rozbud"):
@@ -561,7 +570,7 @@ def extended(tryb="rozbud"):
     score1=0
     
     #losowanie background
-    background=background_skin_rand()
+    background=backgroundTextureRandom()
     
     skin1=open("skin1.txt","r")
     linia1=skin1.readline()
@@ -1238,13 +1247,13 @@ def players():
     
     
     """
-    numer_background=random.randrange(2)
-    if(numer_background==0):
+    randomNumber=random.randrange(2)
+    if(randomNumber==0):
         background=pygame.image.load('background1.png')
-    elif(numer_background==1):
+    elif(randomNumber==1):
         background=pygame.image.load('background2.png')
     """
-    background=background_skin_rand()
+    background=backgroundTextureRandom()
     
     randAppleX= round(random.randrange(0,displayWidth-blockSize)/20.0)*20.0
     randAppleY= scoreBarHeight+round(random.randrange(0,displayHeight-scoreBarHeight-blockSize)/20.0)*20.0
