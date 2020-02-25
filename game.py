@@ -83,7 +83,7 @@ def backgroundTextureRandom():
 
 
 # losowanie skina fruitka
-def fruits_skin_rand():
+def randomFruitSkin():
     random.seed()
     numer = random.randrange(5)
     if (numer == 0):
@@ -154,7 +154,7 @@ def pause():
 
 
 # wyswiebackgroundnie w rogu
-def powerups(przyspieszenie, bonus_points, shift):
+def showActivePowerUps(przyspieszenie, bonus_points, shift):
     powery = smallfont.render("Aktywne ulepszenia: ", True, black)
     gameDisplay.blit(powery, [400, 0])
     if (przyspieszenie == True):
@@ -452,6 +452,12 @@ class Snake:
                 return True
 
 
+def randObstaclePosition():
+    X = round(random.randrange(blockSize, displayWidth - blockSize - blockSize) / 20.0) * 20.0
+    Y = scoreBarHeight + round(
+        random.randrange(blockSize, displayHeight - scoreBarHeight - blockSize - blockSize) / 20.0) * 20.0
+    return [X, Y]
+
 def classic():
     skin = getSkinOne()
     snake = Snake(displayWidth / 2, displayHeight / 2, skin[0], skin[1])
@@ -468,6 +474,7 @@ def classic():
         while (gameOver == True):
             snake.setChange(0, 0)
 
+            #TODO funkcja od tego ?
             message_to_screen("Przegrałes", white, y_displace=-50, size="large")
             button("Jeszcze raz!", 275, 350, 250, 50, green, lightGreen, action="classic")
             button("Do menu głównego", 275, 450, 250, 50, red, lightRed, action="intro")
@@ -478,6 +485,7 @@ def classic():
                     gameExit = True
                     gameOver = False
 
+        #TODO funkcja od tego?
         for event in pygame.event.get():
             if (event.type == pygame.QUIT):
                 gameExit = True
@@ -502,7 +510,7 @@ def classic():
                     pause()
 
         if (getNewFruit == True):
-            img = fruits_skin_rand()
+            img = randomFruitSkin()
             getNewFruit = False
 
         gameDisplay.blit(background, (0, 0))
@@ -532,108 +540,50 @@ def classic():
 
 
 def extended(tryb="rozbud"):
-    przejscie = 1
-    # potrzebne do losowania skina pierwszych jeblek~cos takiego to powyzsze
-    losuj2 = True
-    losuj3 = True
-    czasmushroom = time.time()
-    jest_mushroom = False
-    czasPrzeszkoda = time.time()
-    jest_przeszkoda = False
-    czaspowerup = time.time()
-    jest_powerup = False
-    # czas przyspieszenia jest nizej
-    przyspieszenie = False
-    bonus_points = False
-    shift = False
-    czas_tr_speed = 7
-    czas_tr_bonus = 10
-    czas_tr_shift = 7
-    czas_spawn_power = 3
-    # byl_mushroom=False
-    apple_list = []
-    global direction
-    direction = "right"
-    # losowac_skin_Fruits=True
+    lastMushroom = time.time()
+    isMushroomPresent = False
+
+    lastObstacle = time.time()
+    isObstacePresent = False
+
+    lastPowerUp = time.time()
+    isPowerUpPresent = False
+
+    speedActive = False
+    speedDuration = 7
+    timeSinceSpeedPickup = time.time()
+
+    bonusPointsActive = False
+    bonusPointsDuration = 10
+    timeSinceBonusPointsPickup = time.time()
+
+    shiftActive = False
+    shiftDuration = 7
+    timeSinceShiftPickup = time.time()
+
+    objectList = 6 * [None]  # Fruit,Fruit,Fruit,Mushroom,Obstacle,PowerUp
+    fruitSkin = [randomFruitSkin(), randomFruitSkin(), randomFruitSkin()]
+
     gameExit = False
     gameOver = False
-    lead_x = displayWidth / 2
-    lead_y = displayHeight / 2
-    lead_x_change = 20
-    lead_y_change = 0
-
-    snakelist = []
-    snakeLength = 3
-    score1 = 0
-
-    # losowanie background
     background = backgroundTextureRandom()
+    skin = getSkinOne()
+    snake = Snake(displayWidth / 2, displayHeight / 2, skin[0], skin[1])
+    player1Score = 0
 
-    skin1 = open("skin1.txt", "r")
-    linia1 = skin1.readline()
-    if (linia1 == "ziel"):
-        headimg = pygame.image.load('graphics/head1.png')
-        bodyimg = pygame.image.load('graphics/body1.png')
-    elif (linia1 == "czer"):
-        headimg = pygame.image.load('graphics/head2.png')
-        bodyimg = pygame.image.load('graphics/body2.png')
-    elif (linia1 == "nieb"):
-        headimg = pygame.image.load('graphics/head3.png')
-        bodyimg = pygame.image.load('graphics/body3.png')
-    skin1.close()
-
-    randAppleX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-    randAppleY = scoreBarHeight + round(random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-    placeApple = [randAppleX, randAppleY]
-    apple_list.append(placeApple)
-
-    randAppleX2 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-    randAppleY2 = scoreBarHeight + round(random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-    placeApple2 = [randAppleX2, randAppleY2]
-
-    # sprawdza czy sie powtarza z applelist
-    while (losuj2 == True):
-        checked_losuj2 = 0
-        for eachElem in apple_list[:]:
-            if (placeApple2 == eachElem):
-                break
-            else:
-                checked_losuj2 += 1
-        if (checked_losuj2 == len(apple_list)):
-            losuj2 = False
-            apple_list.append(placeApple2)
-        randAppleX2 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-        randAppleY2 = scoreBarHeight + round(
-            random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-        placeApple2 = [randAppleX2, randAppleY2]
-
-    randAppleX3 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-    randAppleY3 = scoreBarHeight + round(random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-    placeApple3 = [randAppleX3, randAppleY3]
-
-    # sprawdza czy sie powtarza z applelist
-    while (losuj3 == True):
-        checked_losuj3 = 0
-        for eachElem in apple_list[:]:
-            if (placeApple3 == eachElem):
-                break
-            else:
-                checked_losuj3 += 1
-        if (checked_losuj3 == len(apple_list)):
-            losuj3 = False
-            apple_list.append(placeApple3)
-        randAppleX3 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-        randAppleY3 = scoreBarHeight + round(
-            random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-        placeApple3 = [randAppleX3, randAppleY3]
+    for index in range(0, 3):
+        fruitPosition = randFruitPosition()
+        while (fruitPosition in objectList):
+            fruitPosition = randFruitPosition()
+        objectList[index] = fruitPosition
 
     while (gameExit != True):
         while (gameOver == True):
-            # brak poruszenia po koncu gry
-            lead_x_change = 0
-            lead_y_change = 0
+            snake.setChange(0, 0)
+
+            # TODO funkcja od tego ?
             message_to_screen("Przegrałes", white, y_displace=-50, size="large")
-            button("Jeszcze raz!", 275, 350, 250, 50, green, lightGreen, action=tryb)
+            button("Jeszcze raz!", 275, 350, 250, 50, green, lightGreen, action="classic")
             button("Do menu głównego", 275, 450, 250, 50, red, lightRed, action="intro")
             pygame.display.update()
 
@@ -642,531 +592,204 @@ def extended(tryb="rozbud"):
                     gameExit = True
                     gameOver = False
 
-        if (przyspieszenie == True):
-            koniecprzyspieszenia = time.time() - czasprzyspieszenie
-            if (koniecprzyspieszenia > czas_tr_speed):
+        for event in pygame.event.get():
+            if (event.type == pygame.QUIT):
+                gameExit = True
+            if (event.type == pygame.KEYDOWN):
+                if (shiftActive == False):
+                    if (event.key == pygame.K_a):
+                        if (snake.direction != "right"):
+                            snake.setDirection("left")
+                            snake.setChange(-blockSize, 0)
+                    elif (event.key == pygame.K_d):
+                        if (snake.direction != "left"):
+                            snake.setDirection("right")
+                            snake.setChange(blockSize, 0)
+                    elif (event.key == pygame.K_w):
+                        if (snake.direction != "down"):
+                            snake.setDirection("up")
+                            snake.setChange(0, -blockSize)
+                    elif (event.key == pygame.K_s):
+                        if (snake.direction != "up"):
+                            snake.setDirection("down")
+                            snake.setChange(0, blockSize)
+                    elif (event.key == pygame.K_p):
+                        pause()
+                elif (shiftActive == True):
+                    if (event.key == pygame.K_a):
+                        if (snake.direction != "left"):
+                            snake.setDirection("right")
+                            snake.setChange(blockSize, 0)
+                    elif (event.key == pygame.K_d):
+                        if (snake.direction != "right"):
+                            snake.setDirection("left")
+                            snake.setChange(-blockSize, 0)
+                    elif (event.key == pygame.K_w):
+                        if (snake.direction != "up"):
+                            snake.setDirection("down")
+                            snake.setChange(0, blockSize)
+                    elif (event.key == pygame.K_s):
+                        if (snake.direction != "down"):
+                            snake.setDirection("up")
+                            snake.setChange(0, -blockSize)
+                    elif (event.key == pygame.K_p):
+                        pause()
+
+        # Checking PowerUps
+        if (speedActive == True):
+            if ((time.time() - timeSinceSpeedPickup) > speedDuration):
                 FPS = 7
-                przyspieszenie = False
+                speedActive = False
             else:
                 FPS = 14
         else:
             FPS = 7
 
-        if (shift == True):
-            koniecshift = time.time() - czasshift
-            if (koniecshift > czas_tr_shift):
-                shift = False
+        if (shiftActive == True):
+            if ((time.time() - timeSinceShiftPickup) > shiftDuration):
+                shiftActive = False
 
-        for event in pygame.event.get():
-            if (event.type == pygame.QUIT):
-                gameExit = True
-            if (event.type == pygame.KEYDOWN):
-                if (shift == False):
-                    if (event.key == pygame.K_a):
-                        if (direction != "right"):
-                            direction = "left"
-                            lead_x_change = -blockSize
-                            lead_y_change = 0
-                    elif (event.key == pygame.K_d):
-                        if (direction != "left"):
-                            direction = "right"
-                            lead_x_change = blockSize
-                            lead_y_change = 0
-                    elif (event.key == pygame.K_w):
-                        if (direction != "down"):
-                            direction = "up"
-                            lead_y_change = -blockSize
-                            lead_x_change = 0
-                    elif (event.key == pygame.K_s):
-                        if (direction != "up"):
-                            direction = "down"
-                            lead_y_change = blockSize
-                            lead_x_change = 0
-                    elif (event.key == pygame.K_p):
-                        pause()
-                elif (shift == True):
-                    if (event.key == pygame.K_a):
-                        if (direction != "left"):
-                            direction = "right"
-                            lead_x_change = blockSize
-                            lead_y_change = 0
-                    elif (event.key == pygame.K_d):
-                        if (direction != "right"):
-                            direction = "left"
-                            lead_x_change = -blockSize
-                            lead_y_change = 0
-                    elif (event.key == pygame.K_w):
-                        if (direction != "up"):
-                            direction = "down"
-                            lead_y_change = blockSize
-                            lead_x_change = 0
-                    elif (event.key == pygame.K_s):
-                        if (direction != "down"):
-                            direction = "up"
-                            lead_y_change = -blockSize
-                            lead_x_change = 0
-                    elif (event.key == pygame.K_p):
-                        pause()
-
-        lead_x += lead_x_change
-        lead_y += lead_y_change
-
-        # wyjscie poza plansze
-        if (tryb == "rozbud"):
-            if (lead_x >= displayWidth or lead_x < 0 or lead_y >= displayHeight or lead_y < scoreBarHeight):
-                gameOver = True
-        elif (tryb == "global"):
-            if (lead_x == displayWidth):
-                lead_x = 0
-            elif (lead_x == 0 - blockSize):
-                lead_x = displayWidth
-            elif (lead_y == displayHeight):
-                lead_y = 0 + scoreBarHeight
-            elif (lead_y < 0 + scoreBarHeight):
-                lead_y = displayHeight
-
-        gameDisplay.blit(background, (0, 0))
-
-        if (przejscie == 1):
-            appleimg = pygame.image.load('graphics/fruit1.png')
-            appleimg2 = pygame.image.load('graphics/fruit2.png')
-            appleimg3 = pygame.image.load('graphics/fruit3.png')
-            przejscie = 2
-
-        gameDisplay.blit(appleimg, (randAppleX, randAppleY))
-        gameDisplay.blit(appleimg2, (randAppleX2, randAppleY2))
-        gameDisplay.blit(appleimg3, (randAppleX3, randAppleY3))
-
-        # ustawianie mushrooma i losowanie jego wspolrzednych
-        koniecmushroom = time.time() - czasmushroom
-        if (koniecmushroom > 10 and jest_mushroom == False):
-            # if(byl_mushroom==False):
-            randmushroomX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-            randmushroomY = scoreBarHeight + round(
-                random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-            placemushroom = [randmushroomX, randmushroomY]
-            # sprawdzanie mushroomka na snake i fruitek
-            sprawdzaj_M = True
-            losuj_noweM = False
-            while (sprawdzaj_M == True):
-
-                checked_snake = 0
-                for eachSegment in snakelist[:]:
-                    if (eachSegment == placemushroom):
-                        print("MnaS")
-                        losuj_noweM = True
-                        break
-                    else:
-                        checked_snake += 1
-
-                checked_apple = 0
-                if (losuj_noweM == False):
-                    for eachElem in apple_list[:]:
-                        if (eachElem == placemushroom):
-                            print("MnaO")
-                            losuj_noweM = True
-                            break
-                        else:
-                            checked_apple += 1
-
-                if (jest_przeszkoda == True and losuj_noweM == False):
-                    if (placemushroom == placePrzesz):
-                        losuj_noweM = True
-
-                if (jest_powerup == True and losuj_noweM == False):
-                    if (placemushroom == placePower):
-                        losuj_noweM = True
-
-                if (checked_snake == len(snakelist) and checked_apple == len(apple_list) and losuj_noweM == False):
-                    sprawdzaj_M = False
-
-                if (losuj_noweM == True):
-                    losuj_noweM = False
-                    randmushroomX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-                    randmushroomY = scoreBarHeight + round(
-                        random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-                    placemushroom = [randmushroomX, randmushroomY]
-            jest_mushroom = True
-
-        if (jest_mushroom == True):
-            gameDisplay.blit(mushroom, (randmushroomX, randmushroomY))
-
-        # przeszkoda
-        koniecPrzeszkoda = time.time() - czasPrzeszkoda
-        if (koniecPrzeszkoda > 5 and jest_przeszkoda == False):
-            # podwojne blocksize aby dalo sie okrazyc
-            randPrzeszX = round(random.randrange(blockSize, displayWidth - blockSize - blockSize) / 20.0) * 20.0
-            randPrzeszY = scoreBarHeight + round(
-                random.randrange(blockSize, displayHeight - scoreBarHeight - blockSize - blockSize) / 20.0) * 20.0
-            placePrzesz = [randPrzeszX, randPrzeszY]
-
-            sprawdzaj_snakeP = True
-            losuj_noweP = False
-            while (sprawdzaj_snakeP == True):
-
-                checked = 0
-                for eachSegment in snakelist[:]:
-                    if (eachSegment == placePrzesz):
-                        print("PnaS")
-                        losuj_noweP = True
-                        break
-                    else:
-                        checked += 1
-
-                # checked_apple=0
-                if (losuj_noweP == False):
-                    for eachElem in apple_list[:]:
-                        if (eachElem == placePrzesz):
-                            print("PnaO")
-                            losuj_noweP = True
-                            break
-                        # else:
-                        # checked_apple+=1
-
-                if (jest_mushroom == True and losuj_noweP == False):
-                    if (placePrzesz == placemushroom):
-                        losuj_noweP = True
-
-                if (jest_powerup == True and losuj_noweP == False):
-                    if (placePrzesz == placePower):
-                        losuj_noweP = True
-
-                if (checked == len(snakelist) and losuj_noweP == False):
-                    sprawdzaj_snakeP = False
-
-                if (losuj_noweP == True):
-                    losuj_noweP = False
-                    randPrzeszX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-                    randPrzeszY = scoreBarHeight + round(
-                        random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-                    placePrzesz = [randPrzeszX, randPrzeszY]
-
-            jest_przeszkoda = True
-
-        # powerup
-        koniecpowerup = time.time() - czaspowerup
-        if (koniecpowerup > czas_spawn_power and jest_powerup == False):
-
-            numer_power = random.randrange(3)
-            if (numer_power == 0):
-                powerupimg = speedImg
-            elif (numer_power == 1):
-                powerupimg = bonusImg
-            elif (numer_power == 2):
-                powerupimg = shiftImg
-
-            randPowerX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-            randPowerY = scoreBarHeight + round(
-                random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-            placePower = [randPowerX, randPowerY]
-            # sprawdzanie powera na snake i fruitek
-            sprawdzaj_PU = True
-            losuj_nowePU = False
-
-            while (sprawdzaj_PU == True):
-
-                checked_snake = 0
-                for eachSegment in snakelist[:]:
-                    if (eachSegment == placePower):
-                        print("PUnaS")
-                        losuj_nowePU = True
-                        break
-                    else:
-                        checked_snake += 1
-
-                checked_apple = 0
-                if (losuj_nowePU == False):
-                    for eachElem in apple_list[:]:
-                        if (eachElem == placePower):
-                            print("PUnaO")
-                            losuj_nowePU = True
-                            break
-                        else:
-                            checked_apple += 1
-
-                if (jest_przeszkoda == True and losuj_nowePU == False):
-                    if (placePower == placePrzesz):
-                        losuj_nowePU = True
-
-                if (jest_mushroom == True and losuj_nowePU == False):
-                    if (placePower == placemushroom):
-                        losuj_nowePU = True
-
-                if (checked_snake == len(snakelist) and checked_apple == len(apple_list) and losuj_nowePU == False):
-                    sprawdzaj_PU = False
-
-                if (losuj_nowePU == True):
-                    losuj_nowePU = False
-                    randPowerX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-                    randPowerY = scoreBarHeight + round(
-                        random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-                    placePower = [randPowerX, randPowerY]
-            jest_powerup = True
-
-        if (jest_powerup == True):
-            gameDisplay.blit(powerupimg, (randPowerX, randPowerY))
-
-        snakehead = []
-        snakehead.append(lead_x)
-        snakehead.append(lead_y)
-        snakelist.append(snakehead)
-        snake(blockSize, snakelist, headimg, bodyimg)
-
-        # wyswiebackgroundnie przeszkody po snaku-wazniejsza
-        if (jest_przeszkoda == True):
-            gameDisplay.blit(obstacleImg, (randPrzeszX, randPrzeszY))
-
-        # Gorne menu
-        gameDisplay.fill(grey, rect=[0, 0, displayWidth, scoreBarHeight])
-
-        if (len(snakelist) > snakeLength):
-            del snakelist[0]
-
-        # czy wjechal sam w siebie
-        for eachSegment in snakelist[:-1]:
-            if (eachSegment == snakehead):
-                gameOver = True
-
-        score(score1)
-        powerups(przyspieszenie, bonus_points, shift)
-        pygame.display.update()
-
-        if (bonus_points == True):
-            koniecbonuspoints = time.time() - czasbonuspoints
-            if (koniecbonuspoints > czas_tr_bonus):
-                bonus_points = False
+        if (bonusPointsActive == True):
+            if (time.time() - timeSinceBonusPointsPickup > bonusPointsDuration):
+                bonusPointsActive = False
                 bonus = 0
             else:
                 bonus = 5
         else:
             bonus = 0
 
-        # zjadanie jabluszka1
-        if (lead_x == randAppleX and lead_y == randAppleY):
-            randAppleX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-            randAppleY = scoreBarHeight + round(
-                random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-            placeApple = [randAppleX, randAppleY]
+        # Placing objects
+        if (time.time() - lastMushroom > 10 and isMushroomPresent == False):
+            mushroomPosition = randFruitPosition()
+            while (mushroomPosition in snake.snakeList or mushroomPosition in objectList):
+                mushroomPosition = randFruitPosition()
+            objectList[3] = mushroomPosition
+            isMushroomPresent = True
 
-            sprawdzaj_snakeO = True
-            losuj_noweO = False
-            while (sprawdzaj_snakeO == True):
+        if (time.time() - lastObstacle > 5 and isObstacePresent == False):
+            obstaclePosition = randObstaclePosition()
+            while (obstaclePosition in snake.snakeList or obstaclePosition in objectList):
+                obstaclePosition = randObstaclePosition()
+            objectList[4] = obstaclePosition
+            isObstacePresent = True
 
-                checked = 0
-                for eachSegment in snakelist[:]:
-                    if (eachSegment == placeApple):
-                        print("ala")
-                        losuj_noweO = True
-                        break
-                    else:
-                        checked += 1
+        if (time.time() - lastPowerUp > 3 and isPowerUpPresent == False):
+            powerupNumber = random.randrange(3)
+            if (powerupNumber == 0):
+                powerupimg = speedImg
+            elif (powerupNumber == 1):
+                powerupimg = bonusImg
+            elif (powerupNumber == 2):
+                powerupimg = shiftImg
+            powerUpPosition = randFruitPosition()
+            while (powerUpPosition in snake.snakeList or powerUpPosition in objectList):
+                powerUpPosition = randFruitPosition()
+            objectList[5] = powerUpPosition
+            isPowerUpPresent = True
 
-                if (jest_mushroom == True):
-                    if (placeApple == placemushroom):
-                        losuj_noweO = True
+        #Showing object on the screen
+        gameDisplay.blit(background, (0, 0))
+        snake.move()
+        snake.checkSnakeLength()
 
-                if (jest_przeszkoda == True and losuj_noweO == False):
-                    if (placeApple == placePrzesz):
-                        losuj_noweO = True
+        for index in range(0, 3):
+            gameDisplay.blit(fruitSkin[index], objectList[index])
 
-                if (jest_powerup == True and losuj_noweO == False):
-                    if (placeApple == placePower):
-                        losuj_noweO = True
+        if (isMushroomPresent == True):
+            gameDisplay.blit(mushroom, objectList[3])
 
-                if (placeApple == placeApple2 or placeApple == placeApple3):
-                    losuj_noweO = True
+        if (isObstacePresent == True):
+            gameDisplay.blit(obstacleImg, objectList[4])
 
-                if (checked == len(snakelist) and losuj_noweO == False):
-                    sprawdzaj_snakeO = False
+        if (isPowerUpPresent == True):
+            gameDisplay.blit(powerupimg, objectList[5])
 
-                if (losuj_noweO == True):
-                    losuj_noweO = False
-                    randAppleX = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-                    randAppleY = scoreBarHeight + round(
-                        random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-                    placeApple = [randAppleX, randAppleY]
-            apple_list.pop(0)
-            apple_list.insert(0, [randAppleX, randAppleY])
-            snakeLength += 1
-            score1 += 10 + bonus
-            appleimg = fruits_skin_rand()
+        gameDisplay.fill(grey, rect=[0, 0, displayWidth, scoreBarHeight])
+        score(player1Score)
+        showActivePowerUps(speedActive, bonusPointsActive, shiftActive)  # wyswietlanie bonusa
+        pygame.display.update()
 
-        # zjadanie jabloszka 2
-        if (lead_x == randAppleX2 and lead_y == randAppleY2):
-            randAppleX2 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-            randAppleY2 = scoreBarHeight + round(
-                random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-            placeApple2 = [randAppleX2, randAppleY2]
+        # Eating the Fruit & other objects
+        for index in range(0, 3):
+            if ([snake.leadX, snake.leadY] == objectList[index]):
+                fruitPosition = randFruitPosition()
+                while (fruitPosition in snake.snakeList or fruitPosition in objectList):
+                    fruitPosition = randFruitPosition()
+                objectList[index] = fruitPosition
+                snake.snakeLength += 1
+                player1Score += 10 + bonus
+                fruitSkin[index] = randomFruitSkin()
 
-            sprawdzaj_snakeO2 = True
-            losuj_noweO2 = False
-            while (sprawdzaj_snakeO2 == True):
-
-                checked2 = 0
-                for eachSegment in snakelist[:]:
-                    if (eachSegment == placeApple2):
-                        print("ala")
-                        losuj_noweO2 = True
-                        break
-                    else:
-                        checked2 += 1
-
-                if (jest_mushroom == True and losuj_noweO2 == False):
-                    if (placeApple2 == placemushroom):
-                        losuj_noweO2 = True
-
-                if (jest_przeszkoda == True and losuj_noweO2 == False):
-                    if (placeApple2 == placePrzesz):
-                        losuj_noweO2 = True
-
-                if (jest_powerup == True and losuj_noweO2 == False):
-                    if (placeApple2 == placePower):
-                        losuj_noweO2 = True
-
-                if (placeApple2 == placeApple or placeApple2 == placeApple3):
-                    losuj_noweO2 = True
-
-                if (checked2 == len(snakelist) and losuj_noweO2 == False):
-                    sprawdzaj_snakeO2 = False
-
-                if (losuj_noweO2 == True):
-                    losuj_noweO2 = False
-                    randAppleX2 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-                    randAppleY2 = scoreBarHeight + round(
-                        random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-                    placeApple2 = [randAppleX2, randAppleY2]
-            apple_list.pop(1)
-            apple_list.insert(1, [randAppleX2, randAppleY2])
-            snakeLength += 1
-            score1 += 10 + bonus
-            appleimg2 = fruits_skin_rand()
-
-        # zjadanie jabluszka3
-        if (lead_x == randAppleX3 and lead_y == randAppleY3):
-            randAppleX3 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-            randAppleY3 = scoreBarHeight + round(
-                random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-            placeApple3 = [randAppleX3, randAppleY3]
-
-            sprawdzaj_snakeO3 = True
-            losuj_noweO3 = False
-            while (sprawdzaj_snakeO3 == True):
-
-                checked3 = 0
-                for eachSegment in snakelist[:]:
-                    if (eachSegment == placeApple3):
-                        print("ala")
-                        losuj_noweO3 = True
-                        break
-                    else:
-                        checked3 += 1
-
-                if (jest_mushroom == True):
-                    if (placeApple3 == placemushroom):
-                        losuj_noweO3 = True
-
-                if (jest_przeszkoda == True and losuj_noweO3 == False):
-                    if (placeApple3 == placePrzesz):
-                        losuj_noweO3 = True
-
-                if (jest_powerup == True and losuj_noweO3 == False):
-                    if (placeApple3 == placePower):
-                        losuj_noweO3 = True
-
-                if (placeApple3 == placeApple or placeApple3 == placeApple2):
-                    losuj_noweO3 = True
-
-                if (checked3 == len(snakelist) and losuj_noweO3 == False):
-                    sprawdzaj_snakeO3 = False
-
-                if (losuj_noweO3 == True):
-                    losuj_noweO3 = False
-                    randAppleX3 = round(random.randrange(0, displayWidth - blockSize) / 20.0) * 20.0
-                    randAppleY3 = scoreBarHeight + round(
-                        random.randrange(0, displayHeight - scoreBarHeight - blockSize) / 20.0) * 20.0
-                    placeApple3 = [randAppleX3, randAppleY3]
-            apple_list.pop(2)
-            apple_list.insert(2, [randAppleX3, randAppleY3])
-            snakeLength += 1
-            score1 += 10 + bonus
-            appleimg3 = fruits_skin_rand()
-
-        # zjadanie mushrooma
-        if (jest_mushroom == True):
-            if (lead_x == randmushroomX and lead_y == randmushroomY):
-                jest_mushroom = False
-                score1 -= 5
-                snakeLength -= 1
-                czasmushroom = time.time()
-                if (snakeLength <= 2):
+        if (isMushroomPresent == True):
+            if ([snake.leadX, snake.leadY] == objectList[3]):
+                isMushroomPresent = False
+                player1Score -= 5
+                snake.snakeLength -= 1
+                lastMushroom = time.time()
+                if (snake.snakeLength <= 2):
                     gameOver = True
 
-        # "zjadanie" przeszkody
-        if (jest_przeszkoda == True):
-            if (lead_x == randPrzeszX and lead_y == randPrzeszY):
+        if (isObstacePresent == True):
+            if ([snake.leadX, snake.leadY] == objectList[4]):
                 gameOver = True
 
-        # zjadanie powerupa
-        if (jest_powerup == True):
-            if (lead_x == randPowerX and lead_y == randPowerY):
-                jest_powerup = False
-                czaspowerup = time.time()
+        if (isPowerUpPresent == True):
+            if ([snake.leadX, snake.leadY] == objectList[5]):
+                isPowerUpPresent = False
+                lastPowerUp = time.time()
                 if (powerupimg == speedImg):
-                    przyspieszenie = True
-                    czasprzyspieszenie = time.time()
+                    speedActive = True
+                    timeSinceSpeedPickup = time.time()
                 elif (powerupimg == bonusImg):
-                    bonus_points = True
-                    czasbonuspoints = time.time()
+                    bonusPointsActive = True
+                    timeSinceBonusPointsPickup = time.time()
                 elif (powerupimg == shiftImg):
-                    shift = True
-                    czasshift = time.time()
+                    shiftActive = True
+                    timeSinceShiftPickup = time.time()
 
-        # okrazenie przeszkody
-        if (jest_przeszkoda == True):
-            P1 = False
-            P2 = False
-            P3 = False
-            P4 = False
-            P5 = False
-            P6 = False
-            P7 = False
-            P8 = False
+        if (isObstacePresent == True):
+            obstacleNeighbourList = []
+            obstaclePositionX, obstaclePositionY = obstaclePosition
+            for eachSegment in snake.snakeList:
+                if (eachSegment == [obstaclePositionX - blockSize, obstaclePositionY - blockSize]):
+                    obstacleNeighbourList.append(True)
+                if (eachSegment == [obstaclePositionX, obstaclePositionY - blockSize]):
+                    obstacleNeighbourList.append(True)
+                if (eachSegment == [obstaclePositionX + blockSize, obstaclePositionY - blockSize]):
+                    obstacleNeighbourList.append(True)
+                if (eachSegment == [obstaclePositionX - blockSize, obstaclePositionY]):
+                    obstacleNeighbourList.append(True)
+                if (eachSegment == [obstaclePositionX + blockSize, obstaclePositionY]):
+                    obstacleNeighbourList.append(True)
+                if (eachSegment == [obstaclePositionX - blockSize, obstaclePositionY + blockSize]):
+                    obstacleNeighbourList.append(True)
+                if (eachSegment == [obstaclePositionX, obstaclePositionY + blockSize]):
+                    obstacleNeighbourList.append(True)
+                if (eachSegment == [obstaclePositionX + blockSize, obstaclePositionY + blockSize]):
+                    obstacleNeighbourList.append(True)
+            if (all(obstacleNeighbourList) and len(obstacleNeighbourList) == 8):
+                player1Score += 50
+                isObstacePresent = False
+                lastObstacle = time.time()
+            obstacleNeighbourList = []
 
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX - blockSize, randPrzeszY - blockSize]):
-                    P1 = True
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX, randPrzeszY - blockSize]):
-                    P2 = True
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX + blockSize, randPrzeszY - blockSize]):
-                    P3 = True
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX - blockSize, randPrzeszY]):
-                    P4 = True
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX + blockSize, randPrzeszY]):
-                    P5 = True
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX - blockSize, randPrzeszY + blockSize]):
-                    P6 = True
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX, randPrzeszY + blockSize]):
-                    P7 = True
-            for eachSegment in snakelist[:]:
-                if (eachSegment == [randPrzeszX + blockSize, randPrzeszY + blockSize]):
-                    P8 = True
-            if (
-                    P1 == True and P2 == True and P3 == True and P4 == True and P5 == True and P6 == True and P7 == True and P8 == True):
-                score1 += 50
-                jest_przeszkoda = False
-                czasPrzeszkoda = time.time()
+        # GameOver Conditions
+        if (tryb == "rozbud"):
+            gameOver = checkBorder(snake, displayWidth, displayHeight,scoreBarHeight) or snake.checkHeadOverlapsBody() or gameOver #last one form hiting the obstacle
+        elif (tryb == "global"):
+            if (snake.leadX == displayWidth):
+                snake.leadX = -blockSize
+            elif (snake.leadX == 0 - blockSize):
+                snake.leadX = displayWidth
+            elif (snake.leadY == displayHeight):
+                snake.leadY = -blockSize + scoreBarHeight
+            elif (snake.leadY < 0 + scoreBarHeight):
+                snake.leadY = displayHeight
+            gameOver = snake.checkHeadOverlapsBody()
 
         clock.tick(FPS)
-
     pygame.quit()
     quit()
-
 
 def players():
     czas = time.clock()
@@ -1498,7 +1121,7 @@ def players():
             apple_list.insert(0, [randAppleX, randAppleY])
             snakeLength += 1
             score1 += 10
-            appleimg = fruits_skin_rand()
+            appleimg = randomFruitSkin()
             # losowac_skin_Fruits=True
 
         # zjadanie jabloszka 2
@@ -1546,7 +1169,7 @@ def players():
             apple_list.insert(1, [randAppleX2, randAppleY2])
             snakeLength += 1
             score1 += 10
-            appleimg2 = fruits_skin_rand()
+            appleimg2 = randomFruitSkin()
 
         # zjadanie jabluszka3
         if (lead_x == randAppleX3 and lead_y == randAppleY3):
@@ -1593,7 +1216,7 @@ def players():
             apple_list.insert(2, [randAppleX3, randAppleY3])
             snakeLength += 1
             score1 += 10
-            appleimg3 = fruits_skin_rand()
+            appleimg3 = randomFruitSkin()
 
         # dla drugiego weża:
         # zjadanie jabluszka1
@@ -1641,7 +1264,7 @@ def players():
             apple_list.insert(0, [randAppleX, randAppleY])
             snakeLength2 += 1
             score2p += 10
-            appleimg = fruits_skin_rand()
+            appleimg = randomFruitSkin()
             # losowac_skin_Fruits=True
 
         # zjadanie jabloszka 2
@@ -1689,7 +1312,7 @@ def players():
             apple_list.insert(1, [randAppleX2, randAppleY2])
             snakeLength2 += 1
             score2p += 10
-            appleimg2 = fruits_skin_rand()
+            appleimg2 = randomFruitSkin()
 
         # zjadanie jabluszka3
         if (lead_x2 == randAppleX3 and lead_y2 == randAppleY3):
@@ -1736,7 +1359,7 @@ def players():
             apple_list.insert(2, [randAppleX3, randAppleY3])
             snakeLength2 += 1
             score2p += 10
-            appleimg3 = fruits_skin_rand()
+            appleimg3 = randomFruitSkin()
 
         clock.tick(FPS)
 
