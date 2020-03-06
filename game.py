@@ -1,13 +1,11 @@
 import pygame
 import time
 import random
-import os
-import re
+import os  # for renaming files
+import re  # for regex match
 
 # Begin: Own modules
-import colours
-import images
-import snakeClass
+from Modules import snakeClass, images, colours
 # End: Own modules
 
 pygame.init()
@@ -15,12 +13,13 @@ pygame.init()
 displayHeight = 600
 displayWidth = 800
 blockSize = 20
-
 scoreBarHeight = 40
+
 smallFont = pygame.font.SysFont("comicsansms", 25)
+smallFontSize = 25
 medFont = pygame.font.SysFont("comicsansms", 50)
 largeFont = pygame.font.SysFont("comicsansms", 80)
-smallFontSize = 25
+
 
 gameDisplay = pygame.display.set_mode((displayWidth, displayHeight))
 pygame.display.set_caption("Snake- the game")
@@ -41,11 +40,9 @@ def gameIntroScreen(display):
 
         display.blit(images.menuIMG, (0, 0))
         showMessageOnScreen(display, "Snake", colours.green, -200, "large")
-
         button(display, "Graj", 275, 200, 250, 50, colours.green, colours.lightGreen, action="gameTypeMenu")
         button(display, "Zasady i sterowanie", 275, 300, 250, 50, colours.grey, colours.lightGrey, action="controls")
         button(display, "Wyjscie", 275, 400, 250, 50, colours.red, colours.lightRed, action="quit")
-
         pygame.display.update()
         clock.tick(15)
 
@@ -69,7 +66,6 @@ def gameTypeMenuScreen(display):
                display=True)
         button(display, "Wybor skina", 20, 450, 250, 50, colours.violet, colours.changeViolet, action="skinSelect")
         button(display, "Powrót", 20, 525, 250, 50, colours.red, colours.lightRed, action="gameIntro")
-
         pygame.display.update()
         clock.tick(15)
 
@@ -84,7 +80,6 @@ def controlsScreen(display):
 
         display.blit(images.controlsIMG, (0, 0))
         button(display, "Powrót", 525, 525, 250, 50, colours.red, colours.lightRed, action="gameIntro")
-
         pygame.display.update()
         clock.tick(15)
 
@@ -129,9 +124,7 @@ def skinSelectScreen(display):
         display.blit(images.skin1IMG, (145, 400))
         display.blit(images.skin2IMG, (370, 400))
         display.blit(images.skin3IMG, (595, 400))
-
         button(display, "Powrót", 275, 525, 250, 50, colours.red, colours.lightRed, action="gameTypeMenu")
-
         pygame.display.update()
         clock.tick(15)
 
@@ -148,6 +141,7 @@ def gamePausedScreen(display):
                     paused = False
                 elif event.key == pygame.K_q:
                     gameIntroScreen(display)
+
         display.blit(images.menuIMG, (0, 0))
         showMessageOnScreen(display, "Paused", colours.black, -100, size="large")
         showMessageOnScreen(display, "Nacisnij 'C' by grać dalej", colours.black, 10, size="small")
@@ -188,11 +182,13 @@ def showMessageOnScreen(display, msg, colour, yDisplace=0, size="small"):
     display.blit(textSurf, textRect)
 
 
+# shows player's score
 def showScore(display, score, position=[0, 0]):
     text = smallFont.render("Wynik: " + str(score), True, colours.black)
     display.blit(text, position)
 
 
+# creates a button which performs a specific action after being clicked
 def button(theDisplay, text, x, y, width, height, inactiveColour, activeColour, action=None, display=False):
     cur = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -262,6 +258,7 @@ def createText(text, colour, size):
 
 
 # Begin: Utility Functions
+# Opens the file and writes to it
 def openAndWrite(player, text):
     newFile = open("skinTMP.txt", "w+")
     openedFile = open("skin.txt", "r+")
@@ -280,6 +277,7 @@ def openAndWrite(player, text):
     os.rename("skinTMP.txt", "skin.txt")
 
 
+# returns the Snake skin
 def getSkin(number):
     fileWithSkin = open("skin.txt", "r")
     while number > 0:
@@ -300,6 +298,7 @@ def randFruitPosition():
     return [X, Y]
 
 
+# different from randFruitPosition(), because obstacle cannot be placed next to edges.
 def randObstaclePosition():
     X = round(random.randrange(blockSize, displayWidth - blockSize - blockSize) / 20.0) * 20.0
     Y = scoreBarHeight + round(
@@ -307,12 +306,14 @@ def randObstaclePosition():
     return [X, Y]
 
 
-def checkBorder(snake, displayWidth, displayHeight, scoreBarHeight):
-    if snake.leadX >= displayWidth or snake.leadX < 0 or snake.leadY >= displayHeight or snake.leadY < scoreBarHeight:
+# checks whether the snake run into the edge
+def checkBorder(snake, theDisplayWidth, theDisplayHeight, theScoreBarHeight):
+    if snake.leadX >= theDisplayWidth or snake.leadX < 0 or snake.leadY >= theDisplayHeight or snake.leadY < theScoreBarHeight:
         return True
     return False
 
 
+# checks the user input and modifies the snake
 def handleInput(display, snake1, controlsKeys1, snake2=None, controlKeys2=None):
     leftKey1, rightKey1, upKey1, downKey1 = controlsKeys1
     if snake2 is not None:
@@ -376,13 +377,11 @@ def classicGame(display):
 
     while not gameExit:
         while gameOver:
-
             snake.setChange(0, 0)
             try:
                 gameOver, gameExit = endGameScreen(display, "classic")
             except TypeError:
                 pass
-
         try:
             gameExit = handleInput(display, snake, [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s])
         except TypeError:
@@ -398,21 +397,16 @@ def classicGame(display):
         snake.checkSnakeLength()
         display.fill(colours.grey, rect=[0, 0, displayWidth, scoreBarHeight])
         showScore(display, player1Score)
-
         pygame.display.update()
 
         gameOver = checkBorder(snake, displayWidth, displayHeight, scoreBarHeight) or snake.checkHeadOverlapsBody()
-
-        if [snake.leadX, snake.leadY] == fruitPosition:
+        if snake.getHead() == fruitPosition:
             fruitPosition = randFruitPosition()
-
             while fruitPosition in snake.snakeList:
                 fruitPosition = randFruitPosition()
-
             snake.snakeLength += 1
             player1Score += 10
             getNewFruit = True
-
         clock.tick(FPS)
 
     pygame.quit()
@@ -459,13 +453,11 @@ def extendedGame(display, gameMode="extended"):
 
     while not gameExit:
         while gameOver:
-
             snake.setChange(0, 0)
             try:
                 gameOver, gameExit = endGameScreen(display, gameMode)
             except TypeError:
                 pass
-
         try:
             if not shiftActive:
                 gameExit = handleInput(display, snake, [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s])
@@ -483,11 +475,9 @@ def extendedGame(display, gameMode="extended"):
                 FPS = 14
         else:
             FPS = 7
-
         if shiftActive:
             if (time.time() - timeSinceShiftPickup) > shiftDuration:
                 shiftActive = False
-
         if bonusPointsActive:
             if time.time() - timeSinceBonusPointsPickup > bonusPointsDuration:
                 bonusPointsActive = False
@@ -504,53 +494,48 @@ def extendedGame(display, gameMode="extended"):
                 mushroomPosition = randFruitPosition()
             objectList[3] = mushroomPosition
             isMushroomPresent = True
-
         if time.time() - lastObstacle > 5 and not isObstaclePresent:
             obstaclePosition = randObstaclePosition()
             while obstaclePosition in snake.snakeList or obstaclePosition in objectList:
                 obstaclePosition = randObstaclePosition()
             objectList[4] = obstaclePosition
             isObstaclePresent = True
-
         if time.time() - lastPowerUp > 3 and not isPowerUpPresent:
-            powerupNumber = random.randrange(3)
-            if powerupNumber == 0:
-                powerupimg = images.speedIMG
-            elif powerupNumber == 1:
-                powerupimg = images.bonusIMG
-            elif powerupNumber == 2:
-                powerupimg = images.shiftIMG
+            powerUpNumber = random.randrange(3)
+            if powerUpNumber == 0:
+                powerUpImg = images.speedIMG
+            elif powerUpNumber == 1:
+                powerUpImg = images.bonusIMG
+            elif powerUpNumber == 2:
+                powerUpImg = images.shiftIMG
             powerUpPosition = randFruitPosition()
             while powerUpPosition in snake.snakeList or powerUpPosition in objectList:
                 powerUpPosition = randFruitPosition()
             objectList[5] = powerUpPosition
             isPowerUpPresent = True
 
-        # Showing object on the screen
+        # Showing objects on the screen
         display.blit(background, (0, 0))
         snake.move(display)
         snake.checkSnakeLength()
 
         for index in range(0, 3):
             display.blit(fruitSkin[index], objectList[index])
-
         if isMushroomPresent:
             display.blit(images.mushroomIMG, objectList[3])
-
         if isObstaclePresent:
             display.blit(images.obstacleIMG, objectList[4])
-
         if isPowerUpPresent:
-            display.blit(powerupimg, objectList[5])
+            display.blit(powerUpImg, objectList[5])
 
         display.fill(colours.grey, rect=[0, 0, displayWidth, scoreBarHeight])
         showScore(display, player1Score)
-        showActivePowerUps(display, speedActive, bonusPointsActive, shiftActive)  # wyswietlanie bonusa
+        showActivePowerUps(display, speedActive, bonusPointsActive, shiftActive)
         pygame.display.update()
 
-        # Eating the Fruit & other objects
+        # Eating the Fruit & "eating" other objects
         for index in range(0, 3):
-            if [snake.leadX, snake.leadY] == objectList[index]:
+            if snake.getHead() == objectList[index]:
                 fruitPosition = randFruitPosition()
                 while fruitPosition in snake.snakeList or fruitPosition in objectList:
                     fruitPosition = randFruitPosition()
@@ -560,7 +545,7 @@ def extendedGame(display, gameMode="extended"):
                 fruitSkin[index] = images.randomFruitSkin()
 
         if isMushroomPresent:
-            if [snake.leadX, snake.leadY] == objectList[3]:
+            if snake.getHead() == objectList[3]:
                 isMushroomPresent = False
                 player1Score -= 5
                 snake.snakeLength -= 1
@@ -569,23 +554,24 @@ def extendedGame(display, gameMode="extended"):
                     gameOver = True
 
         if isObstaclePresent:
-            if [snake.leadX, snake.leadY] == objectList[4]:
+            if snake.getHead() == objectList[4]:
                 gameOver = True
 
         if isPowerUpPresent:
-            if [snake.leadX, snake.leadY] == objectList[5]:
+            if snake.getHead() == objectList[5]:
                 isPowerUpPresent = False
                 lastPowerUp = time.time()
-                if powerupimg == images.speedIMG:
+                if powerUpImg == images.speedIMG:
                     speedActive = True
                     timeSinceSpeedPickup = time.time()
-                elif powerupimg == images.bonusIMG:
+                elif powerUpImg == images.bonusIMG:
                     bonusPointsActive = True
                     timeSinceBonusPointsPickup = time.time()
-                elif powerupimg == images.shiftIMG:
+                elif powerUpImg == images.shiftIMG:
                     shiftActive = True
                     timeSinceShiftPickup = time.time()
 
+        # checks whether snake has closed in on the obstacle
         if isObstaclePresent:
             obstacleNeighbourList = []
             obstaclePositionX, obstaclePositionY = obstaclePosition
@@ -615,7 +601,7 @@ def extendedGame(display, gameMode="extended"):
         # GameOver Conditions
         if gameMode == "extended":
             gameOver = checkBorder(snake, displayWidth, displayHeight,
-                                   scoreBarHeight) or snake.checkHeadOverlapsBody() or gameOver  # last one form
+                                   scoreBarHeight) or snake.checkHeadOverlapsBody() or gameOver  # gameOver from
             # hiting the obstacle
         elif gameMode == "global":
             if snake.leadX == displayWidth:
@@ -659,13 +645,12 @@ def playersGame(display):
     fruitList = [None, None, None]
     fruitSkin = [images.randomFruitSkin(), images.randomFruitSkin(), images.randomFruitSkin()]
 
+    # generates starting fruits position
     for index in range(0, 3):
         fruitPosition = randFruitPosition()
         while fruitPosition in fruitList:
             fruitPosition = randFruitPosition()
         fruitList[index] = fruitPosition
-
-    # ---
 
     while not gameExit:
         while gameOver or timeLeft < 0:
@@ -686,7 +671,6 @@ def playersGame(display):
                         gameOver, gameExit = endGameScreen(display, "players", "Remis")
             except TypeError:
                 pass
-
         try:
             gameExit = handleInput(display, snake, [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s], snake2,
                                    [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]) or gameExit
@@ -703,7 +687,6 @@ def playersGame(display):
         display.blit(background, (0, 0))
         snake.move(display)
         snake2.move(display)
-        # TODO opisy ang funkcji
 
         for index in range(0, 3):
             display.blit(fruitSkin[index], fruitList[index])
@@ -714,7 +697,6 @@ def playersGame(display):
         showScore(display, player1Score)
         showScore(display, player2Score, [650, 0])
 
-        # czy wjechal sam w siebie
         if snake.checkHeadOverlapsBody():
             gameOver = True
             player1Fault = True
@@ -722,6 +704,7 @@ def playersGame(display):
         if snake2.checkHeadOverlapsBody():
             gameOver = True
 
+        # checks if snake1 run into snake2
         for eachSegment in snake2.snakeList:
             if eachSegment == snake.getHead():
                 gameOver = True
@@ -737,6 +720,7 @@ def playersGame(display):
         showMessageOnScreen(display, "Pozostaly czas: " + str(timeLeft), colours.black, - 280)
         pygame.display.update()
 
+        # eating the fruit
         for index in range(0, 3):
             if snake.getHead() == fruitList[index]:
                 fruitPosition = randFruitPosition()
@@ -773,7 +757,7 @@ def gameLoopGame(display, gameMode):
         extendedGame(display, "global")
     elif gameMode == "players":
         playersGame(display)
-
-
 # End: Game Modes
+
+
 gameIntroScreen(gameDisplay)

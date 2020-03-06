@@ -24,7 +24,6 @@ class Snake:
     def move(self, display):
         self.leadX += self.xChange
         self.leadY += self.yChange
-
         self.snakeList.append([self.leadX, self.leadY])
 
         if self.direction == "right":
@@ -38,7 +37,6 @@ class Snake:
 
         display.blit(head, (self.snakeList[-1][0], self.snakeList[-1][1]))
 
-        # part = [X,Y]
         for part in self.snakeList[:-1]:
             display.blit(self.bodyImg, (part[0], part[1]))
 
