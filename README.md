@@ -6,7 +6,7 @@ Basic concept was taken from [sentdex YouTube tutorial](https://www.youtube.com/
 ### Rework
 The game was created between **December and January 2017**
 
-In **March 2019** it underwent a rework. Redundant code was put into functions, unnecessary commends were deleted and one big file was split into several smaller ones.
+In **March 2020** it underwent a rework. Redundant code was put into functions, unnecessary commends were deleted and one big file was split into several smaller ones.
 
 Unfortunately some parts are too tightly coupled to be easily separated so the rework is not perfect :confused:
 
