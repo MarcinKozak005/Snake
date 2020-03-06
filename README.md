@@ -23,7 +23,7 @@ Unfortunately some parts are too tightly coupled to be easily separated so the r
         * three power-ups ![powerUp](graphics/speed.png)![powerUp](graphics/bonus.png)![powerUp](graphics/shift.png)
         * **Don't hit yourself or the edge!**
     * Global
-        * As in the Extended game mode, but edge is no longer game over condition:smile:
+        * As in the Extended game mode, but edge is no longer game over condition :smile:
     * Multiplayer (_pol. Dla dwóch graczy_)
         * three fruit ![fruit](graphics/fruit1.png)![fruit](graphics/fruit2.png)![fruit](graphics/fruit3.png)![fruit](graphics/fruit4.png)
         * two **local** players ![snake](graphics/head1.png) ![snake](graphics/head2.png)
