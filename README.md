@@ -1,4 +1,4 @@
-# Snake - the game
+# Snake
 
 A simple snake game created using [PyGame](www.pygame.org) library.
 Basic concept was taken from [sentdex YouTube tutorial](https://www.youtube.com/watch?v=ujOTNg17LjI&list=PLQVvvaa0QuDdLkP8MrOXLe_rKuf6r80KO&index=1)
